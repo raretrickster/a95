@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#11100f">
-<meta name="application-name" content="Амплитуда 95 · Release 4.0">
+<meta name="application-name" content="Амплитуда 95 · Release 5.0">
 <meta name="description" content="Амплитуда 95 — интерактивный роман с памятью решений и сохранением прогресса.">
 <title>Амплитуда 95 — интерактивный роман</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -69,14 +69,14 @@ button.secondary{text-align:center;background:transparent}
 .top{flex-wrap:wrap;row-gap:9px}
 .brand-label{white-space:nowrap}
 .chapter-label{margin-left:auto;text-align:right}
-button.sound-toggle{width:auto;min-width:88px;min-height:30px;padding:7px 9px;border-radius:999px;border:1px solid #4a6173;background:rgba(17,28,37,.76);color:#a8dcff;text-align:center;font:700 9px/1.2 Arial,sans-serif;letter-spacing:.12em;white-space:nowrap;transition:background .25s,border-color .25s,transform .2s,box-shadow .25s}
+button.sound-toggle{width:auto;min-width:126px;min-height:30px;padding:7px 9px;border-radius:999px;border:1px solid #4a6173;background:rgba(17,28,37,.76);color:#a8dcff;text-align:center;font:700 8px/1.2 Arial,sans-serif;letter-spacing:.12em;white-space:nowrap;transition:background .25s,border-color .25s,transform .2s,box-shadow .25s}
 button.sound-toggle[aria-pressed="true"]{background:rgba(30,82,116,.35);border-color:#65c7ff;box-shadow:0 0 16px rgba(101,199,255,.12)}
 button.sound-toggle:active{transform:scale(.96)}
 .frame{transition:filter .8s ease,background 1s ease,border-color .8s ease}
 .frame:after{animation:lightSweep 10s ease-in-out infinite alternate}
 .frame[data-vibe="sea"]:after{background:linear-gradient(90deg,transparent,rgba(125,204,235,.23),transparent)}
 .frame[data-vibe="home"]:after{background:linear-gradient(90deg,transparent,rgba(103,162,205,.12),transparent)}
-section.fade{animation:cinemaIn .66s cubic-bezier(.2,.65,.25,1) both;transform-origin:50% 45%}
+section.fade{animation:cinemaIn .72s cubic-bezier(.2,.65,.25,1) both;transform-origin:50% 45%}
 section.fade .frame{animation:frameIn .9s ease both}
 section.fade .kicker{animation:fadeUp .45s .05s ease both}
 section.fade h1{animation:fadeUp .55s .08s ease both}
@@ -497,6 +497,88 @@ const scenes = {
       "Я ещё не называл это большой ошибкой. Мне казалось, что я просто нашёл способ заработать немного денег и решить собственные проблемы. На деле я пересёк границу, которую раньше видел издалека.",
       "Впереди — первые быстрые деньги, растущая тревога и знакомое чувство, что всё пока ещё можно остановить. Именно так обычно и звучат решения, последствия которых мы пока не умеем оценить."
     ]
+  },
+
+  ch5_start: {
+    chapter:"Глава V · Полоска настроения",
+    section:"Часть I · Первая трещина",
+    title:"Деньги пришли. <span>Всё стало проще.</span>",
+    vibe:"home",stamp:"Северск · Первая неделя",
+    text:[
+      "Спустя неделю всё закончилось. Впервые у меня оказалось много свободных денег. Я раздал долги, ходил в дорогие кафе, купил одежду. Вещи, которые раньше приходилось откладывать на потом, внезапно стали обычными покупками.",
+      "Я чувствовал себя героем симулятора жизни. Будто где-то внутри двигалась невидимая полоска настроения и медленно выходила из красной зоны. Паранойя никуда не делась, но пока ещё не казалась достаточной причиной остановиться. Деньги заглушали её лучше любых разумных доводов."
+    ],
+    choices:[
+      {id:"ch5_money_freedom",label:"Запомнить это как первое настоящее чувство свободы",next:"ch5_network",set:{moneyFeeling:"freedom"},signal:"Когда деньги впервые снимают несколько забот, легко перепутать облегчение со свободой."},
+      {id:"ch5_money_warning",label:"Признать, что тревога никуда не исчезла",next:"ch5_network",set:{moneyFeeling:"warning"},signal:"Я видел предупреждение. Просто пока считал его терпимой ценой."}
+    ]
+  },
+  ch5_network: {
+    chapter:"Глава V · Список друзей",
+    section:"Часть I · Первая трещина",
+    title:"Теперь мне писали <span>незнакомые.</span>",
+    vibe:"city",stamp:"Сообщения · Один за другим",
+    text:[
+      "Сначала это были знакомые. Потом — друзья знакомых. Слухи расползались быстрее, чем я успевал понять, что вообще происходит. Люди, которых я никогда не видел, начали писать с вопросами. Это льстило и пугало одновременно.",
+      "Вчера список друзей был просто списком друзей. Теперь я смотрел на него как на карту возможностей — и почти сразу начинал подозревать каждого. Чем шире становился круг, тем меньше оставалось ощущения, что я хоть что-то контролирую."
+    ],
+    choices:[
+      {id:"ch5_network_validation",label:"Принять внимание за подтверждение, что всё получается",next:"ch5_request",set:{networkLens:"validation"},signal:"Чужой интерес легко принять за доказательство успеха. Но он не делает происходящее безопасным."},
+      {id:"ch5_network_fear",label:"Увидеть, как быстро история выходит из-под контроля",next:"ch5_request",set:{networkLens:"fear"},signal:"Я уже понимал: чем больше людей знает, тем меньше в этой истории остаётся только моего решения."}
+    ]
+  },
+  ch5_request: {
+    chapter:"Глава V · Следующий звонок",
+    section:"Часть I · Первая трещина",
+    title:"«А сотку <span>достать сможешь?»</span>",
+    vibe:"tension",stamp:"Новый запрос · Поздний вечер",
+    text:[
+      "Потом появился запрос совсем другого масштаба. Человек хотел не мелочь на вечер, а большую партию. Я ответил, что уточню, и почти сразу понял: вопрос был уже не в том, смогу ли я это провернуть. Вопрос был в том, почему мне так важно доказать самому себе, что смогу.",
+      "Я знал, кому звонить. Диман умел решать такие вопросы, а я привык считать его человеком, который держит слово. Эта уверенность снова работала на меня — хотя цену следующего шага я пока даже не пытался представить до конца."
+    ],
+    choices:[
+      {id:"ch5_request_commit",label:"Сосредоточиться на обещании и не думать о масштабе",next:"ch5_agreement",set:{requestLens:"commit"},signal:"Когда обещание уже дано, проще думать о том, как его выполнить, чем о том, зачем ты его дал."},
+      {id:"ch5_request_scale",label:"Признать, что это уже совсем другой уровень риска",next:"ch5_agreement",set:{requestLens:"scale"},signal:"Я заметил разницу. Но одного понимания риска оказалось недостаточно, чтобы отказаться."}
+    ]
+  },
+  ch5_agreement: {
+    chapter:"Глава V · Решение принято",
+    section:"Часть I · Первая трещина",
+    title:"Я называл это <span>работой.</span>",
+    vibe:"home",stamp:"Несколько дней ожидания",
+    text:[
+      "Через пару дней Диман решил вопрос и назвал цену. О масштабе того, во что я собирался ввязаться, думать не хотелось. Мне было понятно только одно: я хочу это сделать. Я называл это работой — слово звучало привычно и почти прилично.",
+      "Иногда в голове всплывали совсем другие мысли: когда уже наступит нормальная жизнь, когда мама сможет быть счастливой, когда отец перестанет тянуться за стаканом. Я хотел денег не только ради вещей. Я хотел быстрее выбраться из того, что меня не устраивало. И потому убедил себя, что этот путь — всего лишь средство."
+    ],
+    choices:[
+      {id:"ch5_agreement_purpose",label:"Убедить себя, что я делаю это ради будущего",next:"ch5_flight",set:{tripLens:"purpose"},signal:"Хорошая цель не превращает опасный путь в хороший. Но тогда мне нужна была именно такая версия."},
+      {id:"ch5_agreement_impulse",label:"Не разбирать мотивы — просто идти дальше",next:"ch5_flight",set:{tripLens:"impulse"},signal:"Я откладывал вопросы на потом. Потом всегда казалось, что ещё не наступило."}
+    ]
+  },
+  ch5_flight: {
+    chapter:"Глава V · Длинная дорога назад",
+    section:"Часть I · Первая трещина",
+    title:"Самолёт набирал <span>скорость.</span>",
+    vibe:"flight",stamp:"Взлёт · Путь к Москве",
+    text:[
+      "Когда самолёт начал набирать скорость, путь назад внезапно стал очень длинным. Я не чувствовал себя человеком, который всё просчитал. Скорее, человеком, который успел зайти достаточно далеко и теперь старался не смотреть по сторонам.",
+      "В голове толкались противоречивые мысли. Я думал о риске, о том, что может пойти не так, о том, что удача не обязана продолжаться бесконечно. А потом самолёт оторвался от земли, и тревога на секунду отступила. В этом было что-то обманчиво удобное: раз всё уже началось, можно было сделать вид, что выбор больше не зависит от меня."
+    ],
+    choices:[
+      {id:"ch5_flight_deny",label:"Успокоить себя: теперь остаётся только довести дело до конца",next:"ch5_end",set:{flightLens:"deny"},signal:"Иногда мы называем неизбежностью то, что ещё недавно было нашим решением."},
+      {id:"ch5_flight_admit",label:"Признать страх, не пытаясь выдать его за уверенность",next:"ch5_end",set:{flightLens:"admit"},signal:"Страх никуда не делся. Просто я уже не хотел позволять ему менять мои планы."}
+    ]
+  },
+  ch5_end: {
+    ending:"chapter5",
+    chapter:"Конец главы V",
+    section:"Часть I · Первая трещина",
+    title:"Удача тоже <span>заканчивается.</span>",
+    vibe:"end",stamp:"Москва · Продолжение следует",
+    text:[
+      "Я ехал дальше, потому что уже решил, что назад поворачивать поздно. Впереди была Москва, усталость, чужой адрес и сделка, которая по сравнению с первым вечером казалась совсем другой величиной.",
+      "Тогда я ещё не знал, насколько быстро страх может превратиться в привычку. И насколько опасной становится привычка, если каждый раз после неё ничего не случается."
+    ]
   }
 };
 let current="cover", visited=[], choicesState={}, choiceHistory=[], pendingSignal=null;
@@ -504,12 +586,13 @@ let current="cover", visited=[], choicesState={}, choiceHistory=[], pendingSigna
 let soundEnabled=false;
 try{soundEnabled=localStorage.getItem('amp95_sound_v1')==='1';}catch(e){}
 let audioContext=null;
+let ambientGraph=null;
 function syncSoundButton(){
   const b=document.getElementById('soundToggle');
   if(!b)return;
-  b.textContent=soundEnabled?'ЗВУК · ВКЛ':'ЗВУК · ВЫКЛ';
+  b.textContent=soundEnabled?'АТМОСФЕРА · ВКЛ':'АТМОСФЕРА · ВЫКЛ';
   b.setAttribute('aria-pressed',soundEnabled?'true':'false');
-  b.title=soundEnabled?'Отключить атмосферные звуки':'Включить атмосферные звуки';
+  b.title=soundEnabled?'Выключить атмосферный фон и мягкие звуки':'Включить тихий фон сцены и мягкие отклики';
 }
 function getAudioContext(){
   if(!soundEnabled)return null;
@@ -521,51 +604,120 @@ function getAudioContext(){
     return audioContext;
   }catch(e){return null;}
 }
-function softTone(freq, duration=.12, volume=.018, type='sine', delay=0){
+function softNoiseHit(duration=.055, volume=.0035, cutoff=850){
+  const ctx=getAudioContext();if(!ctx)return;
+  try{
+    const now=ctx.currentTime, length=Math.max(1,Math.floor(ctx.sampleRate*duration));
+    const buffer=ctx.createBuffer(1,length,ctx.sampleRate), data=buffer.getChannelData(0);
+    for(let i=0;i<length;i++){
+      const fade=1-i/length;
+      data[i]=(Math.random()*2-1)*fade*.45;
+    }
+    const source=ctx.createBufferSource(), filter=ctx.createBiquadFilter(), gain=ctx.createGain();
+    source.buffer=buffer;filter.type='lowpass';filter.frequency.setValueAtTime(cutoff,now);filter.Q.value=.45;
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume),now+.012);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+    source.connect(filter);filter.connect(gain);gain.connect(ctx.destination);
+    source.start(now);source.stop(now+duration+.01);
+  }catch(e){}
+}
+function softTone(freq, duration=.06, volume=.0017, delay=0){
   const ctx=getAudioContext();if(!ctx)return;
   try{
     const start=ctx.currentTime+delay, osc=ctx.createOscillator(), gain=ctx.createGain();
-    osc.type=type;osc.frequency.setValueAtTime(freq,start);
+    osc.type='sine';osc.frequency.setValueAtTime(freq,start);
     gain.gain.setValueAtTime(.0001,start);
-    gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume),start+.018);
+    gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume),start+.014);
     gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
-    osc.connect(gain);gain.connect(ctx.destination);osc.start(start);osc.stop(start+duration+.03);
-  }catch(e){}
-}
-function softNoise(duration=1.4, volume=.012, filterType='lowpass', cutoff=900){
-  const ctx=getAudioContext();if(!ctx)return;
-  try{
-    const len=Math.max(1,Math.floor(ctx.sampleRate*duration));
-    const buffer=ctx.createBuffer(1,len,ctx.sampleRate), data=buffer.getChannelData(0);
-    for(let i=0;i<len;i++)data[i]=(Math.random()*2-1)*.65;
-    const source=ctx.createBufferSource(), filter=ctx.createBiquadFilter(), gain=ctx.createGain();
-    source.buffer=buffer;filter.type=filterType;filter.frequency.value=cutoff;filter.Q.value=.55;
-    gain.gain.setValueAtTime(.0001,ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(volume,ctx.currentTime+.22);
-    gain.gain.setValueAtTime(volume,ctx.currentTime+duration*.52);
-    gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+duration);
-    source.connect(filter);filter.connect(gain);gain.connect(ctx.destination);source.start();source.stop(ctx.currentTime+duration+.02);
+    osc.connect(gain);gain.connect(ctx.destination);osc.start(start);osc.stop(start+duration+.025);
   }catch(e){}
 }
 function playCue(kind){
   if(!soundEnabled)return;
-  if(kind==='choice'){softTone(360,.075,.012,'triangle');softTone(520,.09,.008,'sine',.025);}
-  else if(kind==='memory'){softTone(523.25,.24,.014,'sine');softTone(783.99,.34,.009,'sine',.075);}
-  else if(kind==='transition'){softTone(210,.18,.006,'sine');}
-  else if(kind==='toggle'){softTone(620,.12,.009,'sine');}
+  if(kind==='choice'){
+    // A quiet, rounded tactile click — no bright bell or two-note casino cue.
+    softNoiseHit(.047,.0031,720);softTone(148,.055,.0011,.004);
+  }else if(kind==='memory'){
+    // A tiny breath of filtered air marks a memory without a musical jingle.
+    softNoiseHit(.13,.0021,1550);
+  }else if(kind==='transition'){
+    // Scene ambience crossfades do the work; only a barely-there soft texture remains.
+    softNoiseHit(.085,.0011,650);
+  }
+}
+function makeAmbientBuffer(ctx,vibe){
+  const seconds=8, length=Math.floor(ctx.sampleRate*seconds);
+  const buffer=ctx.createBuffer(1,length,ctx.sampleRate), data=buffer.getChannelData(0);
+  for(let i=0;i<length;i++){
+    const phase=i/length;
+    const wave=(Math.sin(phase*Math.PI*2)+1)/2;
+    let envelope=.72;
+    if(vibe==='sea'||vibe==='road') envelope=.16+.84*Math.pow(wave,2.2);
+    else if(vibe==='train'||vibe==='flight') envelope=.72+.18*Math.sin(phase*Math.PI*4);
+    else if(vibe==='tension') envelope=.72+.08*Math.sin(phase*Math.PI*2);
+    else if(vibe==='city') envelope=.64+.16*Math.sin(phase*Math.PI*6);
+    // Repeating, loop-safe noise gives the scene a continuous air/room texture.
+    const white=(Math.random()*2-1);
+    const low=(Math.random()*2-1);
+    data[i]=(white*.62+low*.38)*envelope*.72;
+  }
+  return buffer;
+}
+function stopSceneAtmosphere(){
+  if(!ambientGraph||!audioContext)return;
+  const old=ambientGraph;ambientGraph=null;
+  try{
+    const now=audioContext.currentTime;
+    old.gain.gain.cancelScheduledValues(now);
+    old.gain.gain.setValueAtTime(Math.max(.0001,old.gain.gain.value),now);
+    old.gain.gain.setTargetAtTime(.0001,now,.18);
+    old.source.stop(now+1.05);
+  }catch(e){}
 }
 function playSceneAtmosphere(vibe){
-  if(!soundEnabled)return;
-  if(vibe==='sea'){softNoise(2.3,.012,'lowpass',1450);}
-  else if(vibe==='train'){softNoise(1.65,.008,'lowpass',260);}
-  else if(vibe==='tension'){softTone(94,.13,.012,'sine');softTone(77,.15,.009,'sine',.18);}
-  else if(vibe==='city'){softNoise(1.0,.004,'bandpass',500);}
+  if(!soundEnabled){stopSceneAtmosphere();return;}
+  const ctx=getAudioContext();if(!ctx)return;
+  vibe=vibe||'home';
+  if(ambientGraph&&ambientGraph.vibe===vibe)return;
+  const profiles={
+    sea:{type:'lowpass',cutoff:1550,q:.38,volume:.031},
+    road:{type:'lowpass',cutoff:1150,q:.42,volume:.024},
+    train:{type:'lowpass',cutoff:640,q:.35,volume:.022},
+    flight:{type:'lowpass',cutoff:520,q:.4,volume:.021},
+    city:{type:'bandpass',cutoff:730,q:.25,volume:.015},
+    guest:{type:'lowpass',cutoff:1000,q:.4,volume:.014},
+    kitchen:{type:'lowpass',cutoff:1250,q:.35,volume:.012},
+    home:{type:'lowpass',cutoff:620,q:.35,volume:.012},
+    tension:{type:'lowpass',cutoff:420,q:.45,volume:.015},
+    end:{type:'lowpass',cutoff:360,q:.4,volume:.011}
+  };
+  const p=profiles[vibe]||profiles.home;
+  try{
+    if(ambientGraph){
+      const old=ambientGraph;const now=ctx.currentTime;
+      old.gain.gain.cancelScheduledValues(now);
+      old.gain.gain.setValueAtTime(Math.max(.0001,old.gain.gain.value),now);
+      old.gain.gain.setTargetAtTime(.0001,now,.24);
+      try{old.source.stop(now+1.35);}catch(e){}
+    }
+    const source=ctx.createBufferSource(), filter=ctx.createBiquadFilter(), gain=ctx.createGain();
+    source.buffer=makeAmbientBuffer(ctx,vibe);source.loop=true;
+    filter.type=p.type;filter.frequency.setValueAtTime(p.cutoff,ctx.currentTime);filter.Q.value=p.q;
+    gain.gain.setValueAtTime(.0001,ctx.currentTime);
+    gain.gain.setTargetAtTime(p.volume,ctx.currentTime+.05,.36);
+    source.connect(filter);filter.connect(gain);gain.connect(ctx.destination);
+    source.start();ambientGraph={vibe,source,filter,gain};
+  }catch(e){}
 }
 function toggleSound(){
   soundEnabled=!soundEnabled;
   try{localStorage.setItem('amp95_sound_v1',soundEnabled?'1':'0');}catch(e){}
   syncSoundButton();
-  if(soundEnabled){getAudioContext();playCue('toggle');}
+  if(soundEnabled){
+    const ctx=getAudioContext();
+    if(ctx)playSceneAtmosphere((scenes[current]&&scenes[current].vibe)||'home');
+  }else stopSceneAtmosphere();
 }
 
 const STORAGE_KEY="amp95_progress_v2";
@@ -647,16 +799,26 @@ function getSceneText(id,s){
     if(choicesState.panicResponse==='shame')out.push('В тот момент меня больше всего занимало, кто всё это видел и что теперь обо мне подумают. Этот страх оказался громче здравого смысла.');
     if(choicesState.panicResponse==='help')out.push('Признать, что тебе нужна помощь, оказалось не красивым уроком, а единственным разумным выходом из момента, который я уже не контролировал.');
   }
-  if(id==='ch4_diman'&&choicesState.moneyMotivation==='independence')out.push('Я говорил себе, что хочу всего лишь не зависеть от родителей. В этом желании было что-то понятное — и именно поэтому я так легко перестал замечать, куда оно меня ведёт.');
-  if(id==='ch4_diman'&&choicesState.moneyMotivation==='shortcut')out.push('Я хотел не только самостоятельности. Мне хотелось ускорить жизнь, получить результат сразу — и не думать, почему нормальные пути кажутся такими медленными.');
-  if(id==='ch4_evening'&&choicesState.dimanLens==='dazzle')out.push('Истории Димана казались выходом из привычной жизни. Я видел свободу, но почти не задавался вопросом, что в этих историях осталось за кадром.');
-  if(id==='ch4_evening'&&choicesState.dimanLens==='observe')out.push('Я пытался читать Димана по интонациям и паузам. Но наблюдать за человеком — не то же самое, что понимать его, а тем более понимать последствия его опыта.');
-  if(id==='ch4_ask'&&choicesState.firstTemptation==='future')out.push('Я уже мысленно тратил деньги, которых ещё не было, и строил планы, которым пока не на чем было стоять.');
-  if(id==='ch4_ask'&&choicesState.firstTemptation==='risk')out.push('Я видел риск и не мог сказать, что не понимал его. Просто в тот вечер выгода казалась ближе, чем последствия.');
-  if(id==='ch4_status'&&choicesState.askLens==='business')out.push('Я старался думать об этом как о договорённости. Так было проще не произносить про себя, что я только что изменил отношение к людям из собственного списка контактов.');
-  if(id==='ch4_status'&&choicesState.askLens==='fear')out.push('Я не был уверенным человеком, который хладнокровно всё рассчитал. Я боялся, сомневался, но всё равно сделал шаг — и это пугало сильнее самого страха.');
-  if(id==='ch4_end'&&choicesState.firstStatusLens==='money')out.push('Сильнее всего запомнилось обещание денег: долги можно закрыть, купить одежду, поесть в кафе и больше не объяснять, зачем тебе нужны деньги на выходные.');
-  if(id==='ch4_end'&&choicesState.firstStatusLens==='risk')out.push('Риск не был тайной. Я представлял, чем всё может закончиться, но пока тревога не перевешивала возможность быстро получить то, чего мне не хватало.');
+  if(id==='ch5_network'){
+    if(choicesState.moneyFeeling==='freedom')out.push('Первые деньги дали мне ощущение, что я наконец могу жить без постоянного «потом». Именно поэтому я так легко отодвигал на задний план то, откуда они взялись.');
+    else if(choicesState.moneyFeeling==='warning')out.push('Я замечал тревогу с самого начала. Просто решил, что смогу привыкнуть к ней и не позволить ей мешать.');
+  }
+  if(id==='ch5_request'){
+    if(choicesState.networkLens==='validation')out.push('Мне нравилось, что меня ищут. Я принимал это за признание, хотя на деле незнакомые люди просто видели во мне возможность получить желаемое.');
+    else if(choicesState.networkLens==='fear')out.push('Я уже понимал, что ситуация становится шире меня самого. Но понимание не было тем же самым, что готовность остановиться.');
+  }
+  if(id==='ch5_agreement'){
+    if(choicesState.requestLens==='commit')out.push('Я сосредоточился на обещании. Так было проще, чем признать, что само обещание уже завело меня дальше, чем я собирался идти.');
+    else if(choicesState.requestLens==='scale')out.push('Я видел, что риск вырос. Но продолжал надеяться, что смогу отделить последствия от себя — словно они касались кого-то другого.');
+  }
+  if(id==='ch5_flight'){
+    if(choicesState.tripLens==='purpose')out.push('Я связывал этот шаг с будущим, в котором всё должно было стать лучше. Тогда мне не приходило в голову, что ради будущего можно разрушить то, что у тебя есть сейчас.');
+    else if(choicesState.tripLens==='impulse')out.push('Я не стал отвечать себе на неудобные вопросы. Когда от них отворачиваешься, решение начинает выглядеть проще, чем оно есть.');
+  }
+  if(id==='ch5_end'){
+    if(choicesState.flightLens==='deny')out.push('Я сказал себе, что теперь всё просто должно пройти удачно. Это было не планирование. Это была надежда, переодетая в уверенность.');
+    else if(choicesState.flightLens==='admit')out.push('Я признал страх хотя бы перед самим собой. Но даже честное признание не остановило меня — и в этом была самая неприятная часть.');
+  }
   return out;
 }
 function continueEnding(){
@@ -666,20 +828,14 @@ function continueEnding(){
   const memory=choicesState.lens==="friends"
     ? "Те, кто ехал рядом, останутся в памяти частью этого августа — со всеми ссорами, смешными моментами и решениями."
     : "Море действительно было прекрасным. Но один красивый кадр не делает счастливой всю историю.";
-  return `<p>${result}</p><p>${memory}</p><div class="rule"></div><div class="kicker">Глава II · Первая трещина</div><p>Сентябрь. Одиннадцатый класс. Возвращение к обычной жизни — и человек, который появляется рядом именно тогда, когда внутри слишком много шума.</p><button class="primary" onclick="goTo('ch2_start')">Продолжить: глава II <span class="choice-mark">→</span></button><button class="secondary" onclick="restart()">Начать историю заново</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
+  return `<p>${result}</p><p>${memory}</p><div class="rule"></div><div class="kicker">Глава II · Первая трещина</div><p>Сентябрь. Одиннадцатый класс. Возвращение к обычной жизни — и человек, который появляется рядом именно тогда, когда внутри слишком много шума.</p><button class="primary" onclick="goTo('ch2_start')">Продолжить: глава II <span class="choice-mark">→</span></button><button class="secondary" onclick="restart()">Начать историю заново</button>`;
 }
 function finishChapterTwo(){
   let recap='';
   if(choicesState.arina==='remember_help') recap='Ты сохранил в памяти то, что Арина помогла. Эта деталь вернётся позже.';
   else if(choicesState.arina==='remember_shame') recap='Ты сильнее запомнил стыд и чужие взгляды. В следующих главах этот взгляд на прошлое ещё может отозваться.';
   const confidence=choicesState.control==='believe'?'Ты пока веришь, что можешь остановиться в любой момент.':choicesState.control==='doubt'?'Ты уже сомневаешься в собственном контроле, но пока не знаешь, что с этим делать.':'';
-  return `<p>${recap}</p>${confidence?`<p>${confidence}</p>`:''}<div class="rule"></div><div class="kicker">Глава III · Октябрь</div><p>Твои решения сохранены. Продолжение начинается с промозглого октябрьского дня и знакомого предложения, на которое Миша уже однажды пожалел, что согласился.</p><button class="primary" onclick="goTo('ch3_start')">Продолжить: глава III <span class="choice-mark">→</span></button><button class="secondary" onclick="goTo('ch2_arina')">Пересмотреть сцену с Ариной</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
-}
-function GenShare(){
-  const url=location.href;
-  if(window.Telegram?.WebApp?.openTelegramLink){window.Telegram.WebApp.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent('Амплитуда 95 — интерактивный роман'));}
-  else if(navigator.share){navigator.share({title:'Амплитуда 95',text:'Интерактивная история по мотивам книги',url}).catch(()=>{});}
-  else {const b=document.createElement('textarea');b.value=url;document.body.appendChild(b);b.select();try{document.execCommand('copy')}catch(e){}b.remove();}
+  return `<p>${recap}</p>${confidence?`<p>${confidence}</p>`:''}<div class="rule"></div><div class="kicker">Глава III · Октябрь</div><p>Твои решения сохранены. Продолжение начинается с промозглого октябрьского дня и знакомого предложения, на которое Миша уже однажды пожалел, что согласился.</p><button class="primary" onclick="goTo('ch3_start')">Продолжить: глава III <span class="choice-mark">→</span></button><button class="secondary" onclick="goTo('ch2_arina')">Пересмотреть сцену с Ариной</button><button class="secondary" onclick="restart()">Начать историю заново</button>`;
 }
 function render(id){
   current=id; const s=scenes[id];
@@ -691,8 +847,9 @@ function render(id){
   let controls="";
   if(s.ending==="part1") controls=continueEnding();
   else if(s.ending==="chapter2") controls=finishChapterTwo();
-  else if(s.ending==="chapter3") controls=`<div class="rule"></div><button class="primary" onclick="goTo('ch4_start')">Продолжить: глава IV <span class="choice-mark">→</span></button><button class="secondary" onclick="goTo('ch3_start')">Перечитать главу III</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
-  else if(s.ending==="chapter4") controls=`<div class="rule"></div><button class="primary" onclick="goTo('ch4_start')">Перечитать главу IV</button><button class="secondary" onclick="goTo('ch3_start')">Вернуться к главе III</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
+  else if(s.ending==="chapter3") controls=`<div class="rule"></div><button class="primary" onclick="goTo('ch4_start')">Продолжить: глава IV <span class="choice-mark">→</span></button><button class="secondary" onclick="goTo('ch3_start')">Перечитать главу III</button><button class="secondary" onclick="restart()">Начать историю заново</button>`;
+  else if(s.ending==="chapter4") controls=`<div class="rule"></div><button class="primary" onclick="goTo('ch5_start')">Продолжить: глава V <span class="choice-mark">→</span></button><button class="secondary" onclick="goTo('ch4_start')">Перечитать главу IV</button><button class="secondary" onclick="restart()">Начать историю заново</button>`;
+  else if(s.ending==="chapter5") controls=`<div class="rule"></div><p class="small">В следующей главе — Москва, дорога обратно и последствия, которые уже нельзя списать на случайность.</p><button class="primary" onclick="restart()">Начать историю заново</button><button class="secondary" onclick="goTo('ch5_start')">Перечитать главу V</button><button class="secondary" onclick="goTo('ch4_start')">Вернуться к главе IV</button>`;
   else {
     if(s.note) controls+=`<div class="note">${s.note}</div>`;
     controls+=`<div class="actions">${s.choices.map((c,i)=>`<button onclick="choose('${esc(c.next)}',${i})">${c.label}<span class="choice-mark">↗</span></button>`).join("")}</div>`;
@@ -701,7 +858,7 @@ function render(id){
   app.innerHTML=`<section class="fade"><div class="frame" data-vibe="${s.vibe||'home'}"><span class="frame-stamp">${s.stamp||'Амплитуда 95'}</span></div><div class="kicker">${s.chapter}</div><h1>${s.title}</h1>${signal}${body}${controls}<div class="story-meta"><span>Сцена ${String(visited.length).padStart(2,'0')}</span><span>Прогресс сохраняется</span></div></section>`;
   bar.style.width=Math.min(100,visited.length/totalScenes*100)+"%";
   syncSoundButton();
-  if(soundEnabled){if(signal)playCue('memory');else playCue('transition');playSceneAtmosphere(s.vibe||'home');}
+  if(soundEnabled){if(signal)playCue('memory');else playCue('transition');playSceneAtmosphere(s.vibe||'home');}else stopSceneAtmosphere();
   saveState();
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -734,6 +891,7 @@ async function init(){
     if(hint)hint.textContent=cloud?'Прогресс сохранён · продолжение с места остановки':'Прогресс сохраняется на устройстве';
   }else render('cover');
 }
+document.addEventListener('pointerdown',()=>{if(soundEnabled){const ctx=getAudioContext();if(ctx)playSceneAtmosphere((scenes[current]&&scenes[current].vibe)||'home');}},{once:true,passive:true});
 window.addEventListener('pagehide',saveState);
 init();
 </script>
