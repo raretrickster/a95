@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#11100f">
-<meta name="description" content="Амплитуда 95 — интерактивная история по мотивам первой части книги Миши Цыгановского.">
-<title>Амплитуда 95 — Часть I: Август</title>
+<meta name="description" content="Амплитуда 95 — интерактивный роман с памятью решений и сохранением прогресса.">
+<title>Амплитуда 95 — интерактивный роман</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{--bg:#11100f;--panel:#1b1918;--text:#f1e9df;--muted:#a99d91;--red:#bd443b;--line:#3a302c;--gold:#d5a878;--blue:#536a7d}
@@ -48,7 +48,14 @@ button.secondary{text-align:center;background:transparent}
 .choice-mark{float:right;color:var(--red);padding-left:10px}
 .story-meta{display:flex;gap:15px;flex-wrap:wrap;margin-top:21px;font:10px Arial,sans-serif;color:var(--muted);letter-spacing:.09em;text-transform:uppercase}
 .pill{display:inline-block;border:1px solid #4c3931;padding:5px 8px;color:#cbb8a7;font:10px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;margin:0 0 15px}
-.note{border-left:2px solid var(--red);padding:2px 0 2px 14px;color:#b7a79a;font-size:15px;line-height:1.55;margin:18px 0}
+ .note{border-left:2px solid var(--red);padding:2px 0 2px 14px;color:#b7a79a;font-size:15px;line-height:1.55;margin:18px 0}
+.memory-signal{border-left:2px solid var(--red);padding:10px 13px;margin:0 0 20px;background:linear-gradient(90deg,rgba(189,68,59,.10),transparent);color:#d8b9aa;font-size:14px;line-height:1.5;font-style:italic}
+.memory-signal::before{content:"ПАМЯТЬ · ";font:9px Arial,sans-serif;letter-spacing:.18em;color:var(--red);font-style:normal}
+.reset-link{width:auto;min-height:0;padding:0;border:0;background:transparent;color:#8f8177;font:9px/1.5 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-align:right}
+.reset-link:hover,.reset-link:focus-visible{background:transparent;color:#e0b2a7;border:0}
+.footer-right{display:flex;align-items:flex-end;flex-direction:column;gap:5px;text-align:right}
+.save-hint{font:9px/1.4 Arial,sans-serif;color:#9a8175;letter-spacing:.04em;text-transform:none}
+
 .progress{height:2px;background:#352b27;margin-top:22px;overflow:hidden}
 .progress span{display:block;height:100%;width:0;background:var(--red);transition:width .4s}
 .footer{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:14px;font:9px/1.5 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#776c63}
@@ -63,7 +70,7 @@ button.secondary{text-align:center;background:transparent}
   <header class="top"><span><i class="dot"></i>Интерактивная история</span><span>Часть I · Август</span></header>
   <main id="app" aria-live="polite"></main>
   <div class="progress" aria-hidden="true"><span id="bar"></span></div>
-  <footer class="footer"><span>Амплитуда 95</span><span>Хроники юности, поиска и излома</span></footer>
+  <footer class="footer"><span>Амплитуда 95</span><span class="footer-right"><span class="save-hint" id="saveHint">Прогресс сохраняется автоматически</span><button class="reset-link" onclick="restart()">Сбросить историю</button></span></footer>
 </div>
 <script>
 const scenes = {
@@ -153,8 +160,8 @@ const scenes = {
       "А потом словно гаснет экран. Красивый кадр не способен отменить то, что ждёт за его пределами."
     ],
     choices:[
-      {label:"Сохранить этот момент — он был настоящим",next:"days",set:{sea:"memory"}},
-      {label:"Понять: одного хорошего дня недостаточно",next:"days",set:{sea:"contrast"}}
+      {id:"sea_memory",label:"Сохранить этот момент — он был настоящим",next:"days",set:{sea:"memory"},signal:"Миша запомнит этот выбор."},
+      {id:"sea_contrast",label:"Понять: одного хорошего дня недостаточно",next:"days",set:{sea:"contrast"},signal:"Позже он вспомнит этот берег. Но совсем не так, как сейчас."}
     ]
   },
   days: {
@@ -179,8 +186,8 @@ const scenes = {
       "Но домой мы вернёмся всего через пять дней после приезда на юг. Решение уже принято. И впервые за долгое время оно зависит не от чужого настроения, а от меня."
     ],
     choices:[
-      {label:"Принять последствия и не отступать",next:"departure",set:{decision:"firm"}},
-      {label:"Признать стыд за потраченные деньги — и всё равно уехать",next:"departure",set:{decision:"guilt"}}
+      {id:"decision_firm",label:"Принять последствия и не отступать",next:"departure",set:{decision:"firm"},signal:"Миша запомнит, что однажды решение всё-таки зависело от него."},
+      {id:"decision_guilt",label:"Признать стыд за потраченные деньги — и всё равно уехать",next:"departure",set:{decision:"guilt"},signal:"Некоторые решения не заканчиваются в тот момент, когда их принимаешь."}
     ]
   },
   departure: {
@@ -202,66 +209,264 @@ const scenes = {
       "Боль не складывается в красивые слова. Только что казалось, будто я вышел из раскалённой лавы на горячие угли. Теперь даже эта разница перестаёт иметь значение."
     ],
     choices:[
-      {label:"Остаться наедине с тем, что чувствуешь",next:"ending",set:{grief:"alone"}},
-      {label:"Искать способ заглушить шум в голове",next:"ending",set:{grief:"escape"}}
+      {id:"grief_alone",label:"Остаться наедине с тем, что чувствуешь",next:"ending",set:{grief:"alone"},signal:"Это останется с ним."},
+      {id:"grief_escape",label:"Искать способ заглушить шум в голове",next:"ending",set:{grief:"escape"},signal:"Желание забыться тоже оставляет след."}
     ]
   },
   ending: {
-    chapter:"Конец эпизода · Начало трещины",
+    ending:"part1",
+    chapter:"Конец первой части",
+    section:"Часть I · Август",
     title:"Хотелось <span>забыться.</span>",
-    vibe:"end",stamp:"Часть I продолжается",
-    text:[],
-    ending:true
+    vibe:"end",stamp:"Северск · Возвращение",
+    text:[]
+  },
+  ch2_start: {
+    chapter:"Глава II · Сентябрь",
+    section:"Часть I · Первая трещина",
+    title:"Шум не исчез <span>дома.</span>",
+    vibe:"home",stamp:"Северск · Начало учебного года",
+    text:[
+      "Вернуться домой — не значит вернуться в прежнее состояние. Август закончился, но внутри ещё долго тянулись его декорации: усталость, злость и чувство, будто жизнь уже успела куда-то свернуть без предупреждения.",
+      "Наступил сентябрь. Одиннадцатый класс стоял между школой и взрослой жизнью. Учителя говорили об экзаменах и будущем. Для меня школа всё чаще превращалась в место, где можно было поесть, почитать, посидеть на задней парте и хотя бы немного побыть среди людей."
+    ],
+    choices:[
+      {id:"september_walks",label:"Уходить в книги и долгие прогулки",next:"ch2_routine",set:{chapterTwoApproach:"reflect"},signal:"Не всякая тишина лечит. Иногда она просто даёт услышать себя."},
+      {id:"september_motion",label:"Искать людей и любое движение вокруг",next:"ch2_routine",set:{chapterTwoApproach:"motion"}}
+    ]
+  },
+  ch2_routine: {
+    chapter:"Глава II · Внутренний шум",
+    section:"Часть I · Первая трещина",
+    title:"Нужно было <span>куда-то идти.</span>",
+    vibe:"home",stamp:"После школы · Вечер",
+    text:[
+      "После школы я ложился читать. Когда уставали глаза, проваливался в дневной сон, а вечером выходил гулять с музыкой в наушниках. Ходьба помогала разложить мысли по местам, хотя ненадолго.",
+      "Мне хотелось самому зарабатывать и не просить у мамы деньги на собственные желания. Это казалось простым и правильным: если можешь отвечать за себя, значит, хотя бы что-то держишь в руках. Только внутренний шум от этого не исчезал."
+    ],
+    choices:[
+      {id:"control_belief",label:"Верить, что я сам всё контролирую",next:"ch2_yezh",set:{control:"believe"},signal:"Миша запомнит эту уверенность. Пока он ещё верит, что всё держит в руках."},
+      {id:"control_doubt",label:"Признать, что я не понимаю, куда иду",next:"ch2_yezh",set:{control:"doubt"},signal:"Не всякое признание слабости становится защитой."}
+    ]
+  },
+  ch2_yezh: {
+    chapter:"Глава II · Новые знакомства",
+    section:"Часть I · Первая трещина",
+    title:"Случайности <span>собираются в маршрут.</span>",
+    vibe:"tension",stamp:"Северск · Через общих знакомых",
+    text:[
+      "Через общих знакомых Васи в моей жизни появился Ёж. У него был взгляд человека, который постоянно что-то высматривает. Короткая стрижка, спортивное телосложение и шутки, которые могли разрядить неловкость — или ударить по собеседнику сильнее, чем он ожидал.",
+      "Он лучше меня знал эту среду и успел в ней освоиться. Ему было скучно. Я вернулся с юга в состоянии, будто распахнул двери для всего нового. Мне казалось, что новое обязательно окажется лучше старого. Так часто думаешь, когда очень хочется выбраться из собственной головы."
+    ],
+    choices:[
+      {id:"yezh_escape",label:"Увидеть в знакомстве шанс вырваться из пустоты",next:"ch2_picnic",set:{yezh:"escape"},signal:"Не каждое знакомство начинается как ошибка. Иногда ошибка — то, что ты в нём ищешь."},
+      {id:"yezh_distance",label:"Оставить за собой право держать дистанцию",next:"ch2_picnic",set:{yezh:"distance"}}
+    ]
+  },
+  ch2_picnic: {
+    chapter:"Глава II · Пикник",
+    section:"Часть I · Первая трещина",
+    title:"Любопытство закончилось <span>страхом.</span>",
+    vibe:"road",stamp:"Сентябрь · Одноклассники",
+    text:[
+      "В первый месяц одиннадцатого класса мы с классом поехали на пикник. Там я принял решение, которое в голове выглядело гораздо безобиднее, чем оказалось на деле. Я попробовал спайс — и почти сразу понял, что теряю контроль над собственным состоянием.",
+      "Колени стали ватными, подкатила тошнота, взгляд перестал слушаться. В голове за секунды выстроилась цепочка худших вариантов. Я боялся потерять сознание, попасться преподавателям, получить проблемы — и больше всего боялся, что сейчас всё окончится по-настоящему плохо.",
+      "Одноклассники смотрели, тыкали пальцами. Я бешено злился на них. Теперь я понимаю их реакцию лучше: люди часто не знают, что делать, когда рядом кому-то внезапно становится страшно и плохо. Это не история о крутом опыте. Это момент, когда любопытство перестало быть абстрактным словом."
+    ],
+    choices:[
+      {id:"picnic_shame",label:"Думать о чужих взглядах и страхе опозориться",next:"ch2_arina",set:{panicResponse:"shame"},signal:"В тот момент чужие взгляды казались громче всего остального."},
+      {id:"picnic_help",label:"Признать, что мне нужна помощь",next:"ch2_arina",set:{panicResponse:"help"},signal:"Когда тебе по-настоящему плохо, гордость ничего не исправляет."}
+    ]
+  },
+  ch2_arina: {
+    chapter:"Глава II · Арина",
+    section:"Часть I · Первая трещина",
+    title:"Она просто <span>оказалась рядом.</span>",
+    vibe:"tension",stamp:"Пикник · Момент, который запомнился",
+    text:[
+      "Так в моей жизни появилась Арина. Не во время галлюцинаций и не как чудесное спасение из кино. Она просто оказалась рядом в тот момент, когда мне стало по-настоящему плохо, и помогла.",
+      "Тогда я не знал, сколько места этот человек займёт в моей жизни. Впереди будут признания, которые опоздают, взаимные обиды и моменты, когда захочется то оттолкнуть её, то обнять. Но это будет потом. В тот день было достаточно одного факта: она не прошла мимо."
+    ],
+    choices:[
+      {id:"arina_remember_help",label:"Запомнить, что она помогла",next:"ch2_after",set:{arina:"remember_help"},signal:"Миша запомнит этот выбор."},
+      {id:"arina_remember_shame",label:"Зацепиться за унижение и взгляды остальных",next:"ch2_after",set:{arina:"remember_shame"},signal:"Стыд легко занимает всё пространство, если дать ему такую возможность."}
+    ]
+  },
+  ch2_after: {
+    chapter:"Глава II · После",
+    section:"Часть I · Первая трещина",
+    title:"Некоторые вещи <span>не отпускают сразу.</span>",
+    vibe:"end",stamp:"Сентябрь · После пикника",
+    text:[
+      "Школа продолжалась. Дни возвращались к привычному ритму, но внутри ничего не было таким простым, как казалось со стороны.",
+      "Я ещё не понимал, сколько раз буду искать быстрый способ заглушить то, с чем не получалось разобраться. Иногда человеку кажется, что он просто выбирает вечер, компанию или настроение. Лишь позже замечаешь, как из этих мелочей складывается маршрут."
+    ],
+    choices:[
+      {id:"chapter2_finish",label:"Закончить главу и сохранить прохождение",next:"ch2_end",set:{chapterTwoComplete:true}}
+    ]
+  },
+  ch2_end: {
+    ending:"chapter2",
+    chapter:"Конец главы II",
+    section:"Часть I · Первая трещина",
+    title:"На этом история <span>не заканчивается.</span>",
+    vibe:"end",stamp:"Продолжение следует",
+    text:[
+      "Впереди — октябрь, знакомый голос в телефоне и предложение, которое легче было принять на автомате, чем честно объяснить себе, почему стоит отказаться.",
+      "Прогресс и решения сохранены. Следующая глава продолжит историю с этого места."
+    ]
   }
 };
-let current="cover", visited=[], choicesState={};
+let current="cover", visited=[], choicesState={}, choiceHistory=[], pendingSignal=null;
+const STORAGE_KEY="amp95_progress_v2";
 const app=document.getElementById("app"), bar=document.getElementById("bar");
-const totalScenes=11;
+const tg=window.Telegram?.WebApp;
+const cloud=tg?.CloudStorage;
+let cloudWriteChain=Promise.resolve();
+const totalScenes=19;
 function esc(s){return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}
+function makeState(){return {version:2,current,visited,choicesState,choiceHistory,pendingSignal,updatedAt:Date.now()}}
+function parseState(value){
+  try{
+    const s=typeof value==='string'?JSON.parse(value):value;
+    if(!s||typeof s!=='object'||typeof s.current!=='string'||!(s.current in scenes))return null;
+    return {version:2,current:s.current,visited:Array.isArray(s.visited)?s.visited.filter(x=>typeof x==='string'&&x in scenes):[],choicesState:s.choicesState&&typeof s.choicesState==='object'?s.choicesState:{},choiceHistory:Array.isArray(s.choiceHistory)?s.choiceHistory.slice(-100):[],pendingSignal:s.pendingSignal&&s.pendingSignal.scene===s.current&&typeof s.pendingSignal.text==='string'?s.pendingSignal:null,updatedAt:Number(s.updatedAt)||0};
+  }catch(e){return null}
+}
+function cloudGet(key){return new Promise(resolve=>{
+  if(!cloud?.getItem){resolve(null);return;}
+  let done=false; const finish=v=>{if(!done){done=true;resolve(v)}};
+  try{cloud.getItem(key,(err,value)=>finish(err?null:value||null));}catch(e){finish(null)}
+  setTimeout(()=>finish(null),1200);
+});}
+function cloudSet(key,value){return new Promise(resolve=>{
+  if(!cloud?.setItem){resolve(false);return;}
+  let done=false; const finish=ok=>{if(!done){done=true;resolve(ok)}};
+  try{cloud.setItem(key,value,err=>finish(!err));}catch(e){finish(false)}
+  setTimeout(()=>finish(false),1200);
+});}
+function cloudRemove(key){return new Promise(resolve=>{
+  if(!cloud?.removeItem){resolve(false);return;}
+  let done=false;const finish=ok=>{if(!done){done=true;resolve(ok)}};
+  try{cloud.removeItem(key,err=>finish(!err));}catch(e){finish(false)}
+  setTimeout(()=>finish(false),1200);
+});}
+function applyState(s){current=s.current;visited=s.visited;choicesState=s.choicesState;choiceHistory=s.choiceHistory;pendingSignal=s.pendingSignal;}
+function saveState(){
+  const state=makeState();
+  const raw=JSON.stringify(state);
+  try{localStorage.setItem(STORAGE_KEY,raw);}catch(e){}
+  try{sessionStorage.setItem('amp95_state',raw);}catch(e){}
+  if(cloud?.setItem) {
+    cloudWriteChain=cloudWriteChain.then(()=>cloudSet(STORAGE_KEY,raw)).then(ok=>{
+      const hint=document.getElementById('saveHint');
+      if(hint&&tg) hint.textContent=ok?'Прогресс сохранён в Telegram':'Прогресс сохранён на устройстве';
+      return ok;
+    });
+  }
+}
+async function restoreState(){
+  let local=null, legacy=null, cloudSaved=null;
+  try{local=parseState(localStorage.getItem(STORAGE_KEY));}catch(e){}
+  try{legacy=parseState(sessionStorage.getItem('amp95_state'));}catch(e){}
+  cloudSaved=parseState(await cloudGet(STORAGE_KEY));
+  const candidates=[local,legacy,cloudSaved].filter(Boolean).sort((a,b)=>b.updatedAt-a.updatedAt);
+  if(candidates.length){applyState(candidates[0]);return true;}
+  return false;
+}
+function getSceneText(id,s){
+  const out=[...(s.text||[])];
+  if(id==='ch2_start'){
+    if(choicesState.grief==='escape')out.push('После той потери особенно хотелось выключить внутренний шум. Я ещё не понимал, что попытка ничего не чувствовать тоже может стать привычкой.');
+    else if(choicesState.grief==='alone')out.push('Я остался наедине с болью, как часто и делал. Иногда казалось, что если не отворачиваться от неё, она рано или поздно станет понятнее.');
+    if(choicesState.sea==='memory')out.push('Где-то рядом всё ещё хранилось воспоминание о море — о коротком настоящем счастье посреди плохой поездки. Оно не отменяло остального, но и не исчезало.');
+    else if(choicesState.sea==='contrast')out.push('Тот берег остался в памяти контрастом: несколько минут счастья не сделали хорошей всю поездку. Я уже тогда понимал, насколько одно не похоже на другое.');
+    if(choicesState.decision==='firm')out.push('В Витязево я хотя бы смог принять решение и уехать. На фоне всего остального это казалось доказательством, что я всё ещё могу сам выбирать направление.');
+    else if(choicesState.decision==='guilt')out.push('Я выбрался из Витязево, но чувство вины за потраченные родительские деньги не исчезло вместе с обратным билетом. Иногда решение заканчивает одну проблему, но не все последствия.');
+  }
+  if(id==='ch2_routine'&&choicesState.chapterTwoApproach==='motion')out.push('Я чаще искал компанию и какое-нибудь движение. Тишина давала слишком много места мыслям, а движуха обещала хотя бы ненадолго забить их другим шумом.');
+  if(id==='ch2_yezh'&&choicesState.control==='believe')out.push('Я по-прежнему верил, что в любой момент сумею остановиться и повернуть назад. Уверенность казалась доказательством контроля, хотя доказательством не была.');
+  if(id==='ch2_yezh'&&choicesState.control==='doubt')out.push('Во мне уже жило сомнение, что я сам понимаю свои мотивы. Но признать это вслух и изменить поведение — совершенно разные вещи.');
+  if(id==='ch2_arina'&&choicesState.yezh==='escape')out.push('Я слишком хотел вырваться из пустоты, чтобы спокойно оценивать людей и собственные причины тянуться к ним.');
+  if(id==='ch2_arina'&&choicesState.yezh==='distance')out.push('Я убеждал себя, что могу держать дистанцию и сам выбирать, насколько близко подпускать людей. В реальности всё редко бывает настолько аккуратным.');
+  if(id==='ch2_after'){
+    if(choicesState.arina==='remember_help')out.push('Я запомнил, что Арина помогла. Не как красивый жест из кино — просто как поступок человека, который оказался рядом, когда это было нужно.');
+    if(choicesState.arina==='remember_shame')out.push('Я сильнее зацепился за унижение и чужие взгляды, чем за помощь. Стыд умеет заглушать благодарность, особенно пока ты сам не понимаешь, что с тобой происходит.');
+    if(choicesState.panicResponse==='shame')out.push('В тот момент меня больше всего занимало, кто всё это видел и что теперь обо мне подумают. Этот страх оказался громче здравого смысла.');
+    if(choicesState.panicResponse==='help')out.push('Признать, что тебе нужна помощь, оказалось не красивым уроком, а единственным разумным выходом из момента, который я уже не контролировал.');
+  }
+  return out;
+}
 function continueEnding(){
-  const state=choicesState;
-  const result=state.grief==="escape"
-    ? "После такого хочется, чтобы внутри наконец стало тихо. Но желание забыться не убирает боль — оно лишь открывает следующую дверь."
-    : "Я всегда был ближе к тем, кто остаётся один на один с болью. Но даже если не бежать от неё, жить с ней всё равно придётся."
-  const memory=state.lens==="friends"
+  const result=choicesState.grief==="escape"
+    ? "После такого хотелось, чтобы внутри наконец стало тихо. Но желание забыться не убирает боль — оно лишь открывает следующую дверь."
+    : "Я всегда был ближе к тем, кто остаётся один на один с болью. Но даже если не бежать от неё, жить с ней всё равно придётся.";
+  const memory=choicesState.lens==="friends"
     ? "Те, кто ехал рядом, останутся в памяти частью этого августа — со всеми ссорами, смешными моментами и решениями."
-    : "Море действительно было прекрасным. Но один красивый кадр не делает счастливой всю историю."
-  return `<p>${result}</p><p>${memory}</p><div class="rule"></div><div class="kicker">Дальше по книге</div><p>Сентябрь. Одиннадцатый класс. Возвращение к обычной жизни — и человек, который появляется рядом именно тогда, когда внутри слишком много шума.</p><button class="primary" onclick="restart()">Пройти эпизод заново</button><button class="secondary" onclick="GenShare()">Поделиться прототипом</button>`;
+    : "Море действительно было прекрасным. Но один красивый кадр не делает счастливой всю историю.";
+  return `<p>${result}</p><p>${memory}</p><div class="rule"></div><div class="kicker">Глава II · Первая трещина</div><p>Сентябрь. Одиннадцатый класс. Возвращение к обычной жизни — и человек, который появляется рядом именно тогда, когда внутри слишком много шума.</p><button class="primary" onclick="goTo('ch2_start')">Продолжить: глава II <span class="choice-mark">→</span></button><button class="secondary" onclick="restart()">Начать историю заново</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
+}
+function finishChapterTwo(){
+  let recap='';
+  if(choicesState.arina==='remember_help') recap='Ты сохранил в памяти то, что Арина помогла. Эта деталь вернётся позже.';
+  else if(choicesState.arina==='remember_shame') recap='Ты сильнее запомнил стыд и чужие взгляды. В следующих главах этот взгляд на прошлое ещё может отозваться.';
+  const confidence=choicesState.control==='believe'?'Ты пока веришь, что можешь остановиться в любой момент.':choicesState.control==='doubt'?'Ты уже сомневаешься в собственном контроле, но пока не знаешь, что с этим делать.':'';
+  return `<p>${recap}</p>${confidence?`<p>${confidence}</p>`:''}<div class="rule"></div><div class="kicker">Продолжение следует</div><p>Следующая глава продолжит историю с октября. Твои выборы сохранены — мы не начнём всё заново, когда добавим продолжение.</p><button class="primary" onclick="goTo('ch2_arina')">Пересмотреть сцену с Ариной</button><button class="secondary" onclick="restart()">Начать историю заново</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
 }
 function GenShare(){
   const url=location.href;
-  if(window.Telegram?.WebApp?.openTelegramLink){window.Telegram.WebApp.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent('Амплитуда 95 — интерактивная история'));}
+  if(window.Telegram?.WebApp?.openTelegramLink){window.Telegram.WebApp.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent('Амплитуда 95 — интерактивный роман'));}
   else if(navigator.share){navigator.share({title:'Амплитуда 95',text:'Интерактивная история по мотивам книги',url}).catch(()=>{});}
   else {const b=document.createElement('textarea');b.value=url;document.body.appendChild(b);b.select();try{document.execCommand('copy')}catch(e){}b.remove();}
 }
 function render(id){
   current=id; const s=scenes[id];
+  if(!s)return;
   if(!visited.includes(id)) visited.push(id);
-  const body=(s.text||[]).map(t=>`<p>${t}</p>`).join("");
+  const topLabel=document.querySelector('.top span:last-child');
+  if(topLabel)topLabel.textContent=s.section||'Часть I · Август';
+  const body=getSceneText(id,s).map(t=>`<p>${t}</p>`).join("");
   let controls="";
-  if(s.ending){
-    controls=continueEnding();
-  } else {
+  if(s.ending==="part1") controls=continueEnding();
+  else if(s.ending==="chapter2") controls=finishChapterTwo();
+  else {
     if(s.note) controls+=`<div class="note">${s.note}</div>`;
     controls+=`<div class="actions">${s.choices.map((c,i)=>`<button onclick="choose('${esc(c.next)}',${i})">${c.label}<span class="choice-mark">↗</span></button>`).join("")}</div>`;
   }
-  app.innerHTML=`<section class="fade"><div class="frame" data-vibe="${s.vibe||'home'}"><span class="frame-stamp">${s.stamp||'Амплитуда 95'}</span></div><div class="kicker">${s.chapter}</div><h1>${s.title}</h1>${body}${controls}<div class="story-meta"><span>Сцена ${String(visited.length).padStart(2,'0')}</span><span>Выборы остаются с тобой</span></div></section>`;
+  const signal=pendingSignal&&pendingSignal.scene===id?`<div class="memory-signal" role="status">${esc(pendingSignal.text)}</div>`:"";
+  app.innerHTML=`<section class="fade"><div class="frame" data-vibe="${s.vibe||'home'}"><span class="frame-stamp">${s.stamp||'Амплитуда 95'}</span></div><div class="kicker">${s.chapter}</div><h1>${s.title}</h1>${signal}${body}${controls}<div class="story-meta"><span>Сцена ${String(visited.length).padStart(2,'0')}</span><span>Прогресс сохраняется</span></div></section>`;
   bar.style.width=Math.min(100,visited.length/totalScenes*100)+"%";
+  saveState();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function choose(next,index){
-  const s=scenes[current], selected=s.choices[index];
-  if(selected?.set) Object.assign(choicesState,selected.set);
-  try{sessionStorage.setItem('amp95_state',JSON.stringify({choicesState,visited,current:next}));}catch(e){}
+  const s=scenes[current], selected=s?.choices?.[index];
+  if(!selected||!(next in scenes))return;
+  if(selected.set)Object.assign(choicesState,selected.set);
+  choiceHistory.push({scene:current,choiceId:selected.id||`${current}:${index}`,label:selected.label,next,at:Date.now()});
+  if(choiceHistory.length>20)choiceHistory=choiceHistory.slice(-20);
+  pendingSignal=selected.signal?{scene:next,text:selected.signal}:null;
   render(next);
 }
-function restart(){
-  current='cover';visited=[];choicesState={};
-  try{sessionStorage.removeItem('amp95_state')}catch(e){}
+function goTo(next){if(!(next in scenes))return;pendingSignal=null;render(next);}
+async function restart(){
+  if(!confirm('Начать историю заново? Текущий прогресс и сохранённые решения будут удалены.'))return;
+  current='cover';visited=[];choicesState={};choiceHistory=[];pendingSignal=null;
+  try{localStorage.removeItem(STORAGE_KEY);sessionStorage.removeItem('amp95_state');}catch(e){}
+  if(cloud?.removeItem){await cloudWriteChain; await cloudRemove(STORAGE_KEY);}
   render('cover');
 }
-try{const saved=JSON.parse(sessionStorage.getItem('amp95_state')||'null');if(saved&&saved.choicesState){choicesState=saved.choicesState;visited=Array.isArray(saved.visited)?saved.visited:[];render(saved.current in scenes?saved.current:'cover')}else render('cover')}catch(e){render('cover')}
-if(window.Telegram?.WebApp){window.Telegram.WebApp.ready();window.Telegram.WebApp.expand();}
+async function init(){
+  if(tg){try{tg.ready();tg.expand();}catch(e){}}
+  const restored=await restoreState();
+  if(restored){
+    render(current);
+    const hint=document.getElementById('saveHint');
+    if(hint)hint.textContent=cloud?'Прогресс сохранён · продолжение с места остановки':'Прогресс сохраняется на устройстве';
+  }else render('cover');
+}
+window.addEventListener('pagehide',saveState);
+init();
 </script>
 </body>
 </html>
