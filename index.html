@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#11100f">
+<meta name="description" content="Амплитуда 95 — интерактивная история. Первый прототип.">
+<title>Амплитуда 95 — интерактивная история</title>
+<style>
+:root{--bg:#11100f;--panel:#1b1918;--text:#f1e9df;--muted:#a99d91;--red:#bd443b;--line:#3a302c;--gold:#d5a878}
+*{box-sizing:border-box}
+html{background:var(--bg);color:var(--text);font-family:Georgia,"Times New Roman",serif}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -20%,#3a211d 0%,#171312 36%,#0d0c0c 75%);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E")}
+.shell{max-width:680px;min-height:100vh;margin:auto;padding:22px 18px calc(30px + env(safe-area-inset-bottom));display:flex;flex-direction:column;position:relative}
+.top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font:11px/1.4 Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;margin-right:8px;box-shadow:0 0 13px #bd443b}
+main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:36px 0}
+.kicker{font:11px Arial,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--red);margin-bottom:15px}
+h1{font-size:clamp(42px,12vw,76px);line-height:.91;letter-spacing:-.055em;margin:0 0 22px;font-weight:700}
+h1 span{color:var(--red)}
+h2{font-size:clamp(27px,7vw,39px);line-height:1.02;letter-spacing:-.035em;margin:0 0 20px}
+p{font-size:18px;line-height:1.65;color:#ded2c7;margin:0 0 17px}
+.small{font:12px/1.6 Arial,sans-serif;color:var(--muted)}
+.rule{height:1px;background:linear-gradient(90deg,var(--red),var(--line),transparent);margin:25px 0}
+.actions{display:grid;gap:10px;margin-top:26px}
+button{font:14px/1.4 Arial,sans-serif;cursor:pointer;border:1px solid #54413a;background:#211b19;color:var(--text);padding:16px 17px;text-align:left;transition:transform .15s,border-color .15s,background .15s;min-height:54px}
+button:hover,button:focus-visible{border-color:var(--red);background:#2b1c1a;outline:none}
+button:active{transform:scale(.99)}
+button.primary{background:var(--red);border-color:var(--red);font-weight:700;color:#fff;text-align:center}
+button.primary:hover{background:#d05247}
+button.secondary{text-align:center;background:transparent}
+.story-meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;font:11px Arial,sans-serif;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.progress{height:2px;background:#352b27;margin-top:22px;overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:var(--red);transition:width .4s}
+.footer{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:15px;font:10px/1.5 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#776c63}
+.fade{animation:fade .32s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top"><span><i class="dot"></i>Интерактивная история</span><span>Прототип · 001</span></header>
+  <main id="app" aria-live="polite"></main>
+  <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+  <footer class="footer"><span>Амплитуда 95</span><span>У каждого выбора есть цена</span></footer>
+</div>
+<script>
+const scenes = {
+  intro: {
+    chapter:"Нулевая отметка",
+    title:"Ночь не<br><span>закончилась.</span>",
+    text:[
+      "Город мокрый, будто его только что вытащили из холодной воды. Фонари дрожат в лужах. Телефон в кармане вибрирует второй раз за минуту.",
+      "На экране — имя Артура. Вы не разговаривали несколько недель. Последнее, что осталось между вами, — недосказанность и фраза, которую оба сделали вид, что забыли."
+    ],
+    choices:[
+      {label:"Ответить сразу",next:"answer",flag:"answered"},
+      {label:"Сначала прочитать сообщение",next:"message",flag:"cautious"},
+      {label:"Убрать телефон и идти дальше",next:"ignore",flag:"ignored"}
+    ]
+  },
+  answer: {
+    chapter:"Глава 01 · Звонок",
+    title:"«Миш, ты<br><span>где?»</span>",
+    text:[
+      "Ты принимаешь вызов. На том конце шумит ветер, потом — короткая тишина. Артур говорит быстро, но голос у него не такой, как раньше.",
+      "«Мне надо с тобой увидеться. Не по телефону». Он не объясняет зачем. Ты слышишь, как он затягивается, и понимаешь: разговор будет тяжёлым."
+    ],
+    choices:[
+      {label:"Спросить прямо, что случилось",next:"direct",flag:"direct"},
+      {label:"Сказать, что встретитесь через час",next:"meet",flag:"meet"}
+    ]
+  },
+  message: {
+    chapter:"Глава 01 · Экран",
+    title:"Три слова.<br><span>Без точки.</span>",
+    text:[
+      "Сообщение короткое: «Нужно поговорить». Ни приветствия, ни объяснения. Артур всегда так писал, когда уже всё решил за двоих.",
+      "Ты набираешь ответ, стираешь его и снова смотришь на экран. Иногда несколько секунд тишины говорят больше, чем длинный разговор."
+    ],
+    choices:[
+      {label:"Позвонить ему",next:"answer",flag:"called"},
+      {label:"Написать: «Говори здесь»",next:"textback",flag:"written"}
+    ]
+  },
+  ignore: {
+    chapter:"Глава 01 · Молчание",
+    title:"Можно не<br><span>отвечать.</span>",
+    text:[
+      "Ты убираешь телефон. Несколько шагов — и вибрация повторяется. Потом ещё раз. Город не задаёт вопросов, ему всё равно, куда ты идёшь и от чего пытаешься уйти.",
+      "Но молчание тоже решение. И оно редко остаётся без последствий."
+    ],
+    choices:[
+      {label:"Всё-таки перезвонить",next:"answer",flag:"called"},
+      {label:"Продолжить путь",next:"alone",flag:"alone"}
+    ]
+  },
+  textback: {
+    chapter:"Глава 02 · Граница",
+    title:"«Говори<br><span>здесь».</span>",
+    text:[
+      "Ответ приходит не сразу. Потом появляется надпись: «Не могу. Это важно». Следом — адрес старой круглосуточной забегаловки, где вы когда-то просидели до рассвета.",
+      "Ты можешь пойти туда, но впервые за долгое время не обязан делать это только потому, что попросил друг."
+    ],
+    choices:[
+      {label:"Поехать к нему",next:"meet",flag:"meet"},
+      {label:"Попросить объяснить причину",next:"direct",flag:"direct"}
+    ]
+  },
+  direct: {
+    chapter:"Глава 02 · Без обходов",
+    title:"Правда не<br><span>смягчает.</span>",
+    text:[
+      "«Что произошло, Артур?» — спрашиваешь ты. На другом конце долго молчат. Потом он признаётся: он запутался и не знает, кому ещё позвонить.",
+      "В его голосе нет красивой трагедии. Только усталость человека, который слишком долго откладывал разговор."
+    ],
+    choices:[
+      {label:"Выслушать его до конца",next:"listen",flag:"listened"},
+      {label:"Сказать, что сначала нужна вся правда",next:"truth",flag:"truth"}
+    ]
+  },
+  meet: {
+    chapter:"Глава 02 · Встреча",
+    title:"Старый<br><span>адрес.</span>",
+    text:[
+      "Внутри пахнет пережаренным маслом и мокрой одеждой. Артур сидит у окна, вертит в пальцах бумажный стакан. Увидев тебя, он не улыбается.",
+      "«Я не знаю, как это исправить», — говорит он. Впервые за вечер он смотрит тебе прямо в глаза."
+    ],
+    choices:[
+      {label:"Сесть и дать ему выговориться",next:"listen",flag:"listened"},
+      {label:"Спросить, чего он ждёт от тебя",next:"truth",flag:"truth"}
+    ]
+  },
+  alone: {
+    chapter:"Глава 02 · Дорога",
+    title:"Тишина<br><span>тоже ответ.</span>",
+    text:[
+      "Ты идёшь дальше. Ночь понемногу светлеет, но внутри ничего не меняется. На экране остаётся непрочитанное уведомление.",
+      "Иногда расстояние спасает. Иногда оно просто даёт проблеме время стать больше."
+    ],
+    ending:"alone"
+  },
+  listen: {
+    chapter:"Глава 03 · Чужая тяжесть",
+    title:"Не всё можно<br><span>починить.</span>",
+    text:[
+      "Артур говорит сбивчиво. Ты не перебиваешь. Не обещаешь решить всё за него. Просто остаёшься рядом, пока слова наконец не начинают складываться в смысл.",
+      "Когда он замолкает, между вами впервые за долгое время нет необходимости притворяться, что всё нормально."
+    ],
+    ending:"listen"
+  },
+  truth: {
+    chapter:"Глава 03 · Цена правды",
+    title:"Сначала —<br><span>правда.</span>",
+    text:[
+      "Ты не повышаешь голос. Просто говоришь, что дружба не может держаться на догадках и вечных спасательных операциях.",
+      "Артур отворачивается к окну. Ему больно это слышать. Но впервые разговор не уходит в сторону от того, что действительно важно."
+    ],
+    ending:"truth"
+  }
+};
+let current="intro", visited=0;
+const app=document.getElementById("app"), bar=document.getElementById("bar");
+function render(id){
+  current=id; const s=scenes[id]; visited++;
+  const body=s.text.map(t=>`<p>${t}</p>`).join("");
+  let controls="";
+  if(s.ending){
+    const endings={
+      alone:["Финал · Дистанция","Ты выбрал не вмешиваться. История не закончилась — просто этот разговор пока не состоялся."],
+      listen:["Финал · Присутствие","Ты не решил чужую жизнь за друга. Ты сделал другое: выслушал и не отвернулся."],
+      truth:["Финал · Честность","Ты обозначил границу. Теперь у вас есть шанс говорить честно — если оба будете готовы."]
+    };
+    const e=endings[s.ending];
+    controls=`<div class="rule"></div><div class="kicker">${e[0]}</div><p>${e[1]}</p><button class="primary" onclick="restart()">Пройти заново</button>`;
+  } else {
+    controls=`<div class="actions">${s.choices.map(c=>`<button onclick="choose('${c.next}','${c.flag}')">${c.label} <span style="float:right;color:var(--red)">↗</span></button>`).join("")}</div>`;
+  }
+  app.innerHTML=`<section class="fade"><div class="kicker">${s.chapter}</div><h1>${s.title}</h1>${body}${controls}<div class="story-meta"><span>Сцена ${String(visited).padStart(2,"0")}</span><span>Выбор меняет путь</span></div></section>`;
+  bar.style.width=Math.min(100,visited*14)+"%";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function choose(next,flag){try{const h=JSON.parse(sessionStorage.getItem("amp95_history")||"[]");h.push({from:current,to:next,flag,time:Date.now()});sessionStorage.setItem("amp95_history",JSON.stringify(h));}catch(e){}render(next)}
+function restart(){visited=0;try{sessionStorage.removeItem("amp95_history")}catch(e){}render("intro")}
+render("intro");
+</script>
+</body>
+</html>
