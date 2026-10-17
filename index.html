@@ -4,187 +4,264 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#11100f">
-<meta name="description" content="Амплитуда 95 — интерактивная история. Первый прототип.">
-<title>Амплитуда 95 — интерактивная история</title>
+<meta name="description" content="Амплитуда 95 — интерактивная история по мотивам первой части книги Миши Цыгановского.">
+<title>Амплитуда 95 — Часть I: Август</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root{--bg:#11100f;--panel:#1b1918;--text:#f1e9df;--muted:#a99d91;--red:#bd443b;--line:#3a302c;--gold:#d5a878}
+:root{--bg:#11100f;--panel:#1b1918;--text:#f1e9df;--muted:#a99d91;--red:#bd443b;--line:#3a302c;--gold:#d5a878;--blue:#536a7d}
 *{box-sizing:border-box}
 html{background:var(--bg);color:var(--text);font-family:Georgia,"Times New Roman",serif}
 body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -20%,#3a211d 0%,#171312 36%,#0d0c0c 75%);overflow-x:hidden}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E")}
-.shell{max-width:680px;min-height:100vh;margin:auto;padding:22px 18px calc(30px + env(safe-area-inset-bottom));display:flex;flex-direction:column;position:relative}
-.top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font:11px/1.4 Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E")}
+.shell{max-width:680px;min-height:100vh;margin:auto;padding:20px 18px calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;position:relative}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--muted);font:10px/1.4 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;margin-right:8px;box-shadow:0 0 13px #bd443b}
-main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:36px 0}
-.kicker{font:11px Arial,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--red);margin-bottom:15px}
-h1{font-size:clamp(42px,12vw,76px);line-height:.91;letter-spacing:-.055em;margin:0 0 22px;font-weight:700}
+main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:25px 0 30px}
+.frame{height:clamp(94px,26vw,145px);position:relative;overflow:hidden;border:1px solid #49332d;margin-bottom:26px;background:linear-gradient(115deg,#11100f 0%,#38211e 52%,#12100f 100%);isolation:isolate}
+.frame:before{content:"";position:absolute;inset:-25%;background:repeating-linear-gradient(90deg,transparent 0 8%,rgba(255,220,182,.08) 8.2% 8.7%,transparent 9% 14%);transform:skewX(-15deg);animation:drift 14s linear infinite}
+.frame:after{content:"";position:absolute;width:45%;height:200%;left:32%;top:-48%;transform:rotate(18deg);background:linear-gradient(90deg,transparent,rgba(189,68,59,.22),transparent);filter:blur(8px)}
+.frame[data-vibe="city"]{background:linear-gradient(180deg,#171b26 0%,#a45e42 57%,#1b1414 100%)}
+.frame[data-vibe="train"]{background:linear-gradient(180deg,#23201e 0%,#7b4933 44%,#181210 100%)}
+.frame[data-vibe="guest"]{background:linear-gradient(135deg,#65513d 0%,#25211c 37%,#0f1110 100%)}
+.frame[data-vibe="kitchen"]{background:linear-gradient(135deg,#766a51 0%,#433d30 42%,#171511 100%)}
+.frame[data-vibe="road"]{background:linear-gradient(175deg,#d7a06b 0%,#8c6545 26%,#44362b 57%,#161311 100%)}
+.frame[data-vibe="sea"]{background:linear-gradient(175deg,#bd8c65 0%,#d2a16f 28%,#42596a 29%,#1d3542 58%,#111516 100%)}
+.frame[data-vibe="tension"]{background:linear-gradient(135deg,#36221d,#141211 45%,#4b251f 100%)}
+.frame[data-vibe="flight"]{background:linear-gradient(180deg,#080e1b,#16243b 46%,#bd714c 47%,#251713 75%,#090909 100%)}
+.frame[data-vibe="home"]{background:linear-gradient(130deg,#25201d,#171413 50%,#301d1b)}
+.frame[data-vibe="end"]{background:linear-gradient(140deg,#070707,#191413 48%,#4a1d1b 100%)}
+.frame-stamp{position:absolute;bottom:11px;left:13px;z-index:1;color:#f0d8c1;font:9px Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase;opacity:.9}
+.kicker{font:10px Arial,sans-serif;letter-spacing:.23em;text-transform:uppercase;color:var(--red);margin-bottom:14px}
+h1{font-size:clamp(41px,12vw,76px);line-height:.91;letter-spacing:-.055em;margin:0 0 22px;font-weight:700}
 h1 span{color:var(--red)}
 h2{font-size:clamp(27px,7vw,39px);line-height:1.02;letter-spacing:-.035em;margin:0 0 20px}
-p{font-size:18px;line-height:1.65;color:#ded2c7;margin:0 0 17px}
+p{font-size:18px;line-height:1.64;color:#ded2c7;margin:0 0 17px;white-space:pre-line}
 .small{font:12px/1.6 Arial,sans-serif;color:var(--muted)}
-.rule{height:1px;background:linear-gradient(90deg,var(--red),var(--line),transparent);margin:25px 0}
-.actions{display:grid;gap:10px;margin-top:26px}
-button{font:14px/1.4 Arial,sans-serif;cursor:pointer;border:1px solid #54413a;background:#211b19;color:var(--text);padding:16px 17px;text-align:left;transition:transform .15s,border-color .15s,background .15s;min-height:54px}
+.rule{height:1px;background:linear-gradient(90deg,var(--red),var(--line),transparent);margin:24px 0}
+.actions{display:grid;gap:10px;margin-top:25px}
+button{font:14px/1.4 Arial,sans-serif;cursor:pointer;border:1px solid #54413a;background:#211b19;color:var(--text);padding:15px 16px;text-align:left;transition:transform .15s,border-color .15s,background .15s;min-height:54px;width:100%;-webkit-tap-highlight-color:transparent}
 button:hover,button:focus-visible{border-color:var(--red);background:#2b1c1a;outline:none}
 button:active{transform:scale(.99)}
 button.primary{background:var(--red);border-color:var(--red);font-weight:700;color:#fff;text-align:center}
 button.primary:hover{background:#d05247}
 button.secondary{text-align:center;background:transparent}
-.story-meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;font:11px Arial,sans-serif;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.choice-mark{float:right;color:var(--red);padding-left:10px}
+.story-meta{display:flex;gap:15px;flex-wrap:wrap;margin-top:21px;font:10px Arial,sans-serif;color:var(--muted);letter-spacing:.09em;text-transform:uppercase}
+.pill{display:inline-block;border:1px solid #4c3931;padding:5px 8px;color:#cbb8a7;font:10px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;margin:0 0 15px}
+.note{border-left:2px solid var(--red);padding:2px 0 2px 14px;color:#b7a79a;font-size:15px;line-height:1.55;margin:18px 0}
 .progress{height:2px;background:#352b27;margin-top:22px;overflow:hidden}
 .progress span{display:block;height:100%;width:0;background:var(--red);transition:width .4s}
-.footer{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:15px;font:10px/1.5 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#776c63}
+.footer{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:14px;font:9px/1.5 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#776c63}
 .fade{animation:fade .32s ease both}
 @keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes drift{from{transform:translateX(-12%) skewX(-15deg)}to{transform:translateX(12%) skewX(-15deg)}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="shell">
-  <header class="top"><span><i class="dot"></i>Интерактивная история</span><span>Прототип · 001</span></header>
+  <header class="top"><span><i class="dot"></i>Интерактивная история</span><span>Часть I · Август</span></header>
   <main id="app" aria-live="polite"></main>
   <div class="progress" aria-hidden="true"><span id="bar"></span></div>
-  <footer class="footer"><span>Амплитуда 95</span><span>У каждого выбора есть цена</span></footer>
+  <footer class="footer"><span>Амплитуда 95</span><span>Хроники юности, поиска и излома</span></footer>
 </div>
 <script>
 const scenes = {
-  intro: {
-    chapter:"Нулевая отметка",
-    title:"Ночь не<br><span>закончилась.</span>",
+  cover: {
+    chapter:"Пролог · Последнее лето",
+    title:"АМПЛИТУДА <span>95</span>",
+    vibe:"home", stamp:"Северск → юг России",
     text:[
-      "Город мокрый, будто его только что вытащили из холодной воды. Фонари дрожат в лужах. Телефон в кармане вибрирует второй раз за минуту.",
-      "На экране — имя Артура. Вы не разговаривали несколько недель. Последнее, что осталось между вами, — недосказанность и фраза, которую оба сделали вид, что забыли."
+      "Школа позади. Сибирское лето уже выдыхается, а впереди — август, море и последний учебный год перед взрослой жизнью.",
+      "Тогда казалось, что самое интересное вот-вот начнётся. В поездку я ехал с друзьями и почти не представлял, каким вернусь обратно."
     ],
+    note:"Первая глава интерактивной адаптации. Главные события остаются верны книге; выборы меняют фокус воспоминаний.",
     choices:[
-      {label:"Ответить сразу",next:"answer",flag:"answered"},
-      {label:"Сначала прочитать сообщение",next:"message",flag:"cautious"},
-      {label:"Убрать телефон и идти дальше",next:"ignore",flag:"ignored"}
+      {label:"Думать о море и свободе",next:"moscow",set:{lens:"sea"}},
+      {label:"Держаться за компанию — пока мы вместе",next:"moscow",set:{lens:"friends"}}
     ]
   },
-  answer: {
-    chapter:"Глава 01 · Звонок",
-    title:"«Миш, ты<br><span>где?»</span>",
+  moscow: {
+    chapter:"Глава 01 · Москва",
+    title:"Розовое <span>солнце.</span>",
+    vibe:"city",stamp:"Москва · ожидание поезда",
     text:[
-      "Ты принимаешь вызов. На том конце шумит ветер, потом — короткая тишина. Артур говорит быстро, но голос у него не такой, как раньше.",
-      "«Мне надо с тобой увидеться. Не по телефону». Он не объясняет зачем. Ты слышишь, как он затягивается, и понимаешь: разговор будет тяжёлым."
+      "Сначала был перелёт в Москву, торговый центр и соломенные шляпы. Полчаса задержки — и сопровождающая уже устраивает скандал, хотя до поезда ещё около шести часов.",
+      "На газоне в центре города всё равно хорошо. Огромная Москва живёт на скорости, и мне хочется задержаться в этой атмосфере подольше. Но море манит не меньше."
     ],
     choices:[
-      {label:"Спросить прямо, что случилось",next:"direct",flag:"direct"},
-      {label:"Сказать, что встретитесь через час",next:"meet",flag:"meet"}
+      {label:"Запомнить город и не портить себе ожидание",next:"train",set:{moscow:"wonder"}},
+      {label:"Отмахнуться от скандала: впереди ещё целое лето",next:"train",set:{moscow:"friction"}}
     ]
   },
-  message: {
-    chapter:"Глава 01 · Экран",
-    title:"Три слова.<br><span>Без точки.</span>",
-    text:[
-      "Сообщение короткое: «Нужно поговорить». Ни приветствия, ни объяснения. Артур всегда так писал, когда уже всё решил за двоих.",
-      "Ты набираешь ответ, стираешь его и снова смотришь на экран. Иногда несколько секунд тишины говорят больше, чем длинный разговор."
-    ],
-    choices:[
-      {label:"Позвонить ему",next:"answer",flag:"called"},
-      {label:"Написать: «Говори здесь»",next:"textback",flag:"written"}
-    ]
-  },
-  ignore: {
-    chapter:"Глава 01 · Молчание",
-    title:"Можно не<br><span>отвечать.</span>",
-    text:[
-      "Ты убираешь телефон. Несколько шагов — и вибрация повторяется. Потом ещё раз. Город не задаёт вопросов, ему всё равно, куда ты идёшь и от чего пытаешься уйти.",
-      "Но молчание тоже решение. И оно редко остаётся без последствий."
-    ],
-    choices:[
-      {label:"Всё-таки перезвонить",next:"answer",flag:"called"},
-      {label:"Продолжить путь",next:"alone",flag:"alone"}
-    ]
-  },
-  textback: {
-    chapter:"Глава 02 · Граница",
-    title:"«Говори<br><span>здесь».</span>",
-    text:[
-      "Ответ приходит не сразу. Потом появляется надпись: «Не могу. Это важно». Следом — адрес старой круглосуточной забегаловки, где вы когда-то просидели до рассвета.",
-      "Ты можешь пойти туда, но впервые за долгое время не обязан делать это только потому, что попросил друг."
-    ],
-    choices:[
-      {label:"Поехать к нему",next:"meet",flag:"meet"},
-      {label:"Попросить объяснить причину",next:"direct",flag:"direct"}
-    ]
-  },
-  direct: {
-    chapter:"Глава 02 · Без обходов",
-    title:"Правда не<br><span>смягчает.</span>",
-    text:[
-      "«Что произошло, Артур?» — спрашиваешь ты. На другом конце долго молчат. Потом он признаётся: он запутался и не знает, кому ещё позвонить.",
-      "В его голосе нет красивой трагедии. Только усталость человека, который слишком долго откладывал разговор."
-    ],
-    choices:[
-      {label:"Выслушать его до конца",next:"listen",flag:"listened"},
-      {label:"Сказать, что сначала нужна вся правда",next:"truth",flag:"truth"}
-    ]
-  },
-  meet: {
-    chapter:"Глава 02 · Встреча",
-    title:"Старый<br><span>адрес.</span>",
-    text:[
-      "Внутри пахнет пережаренным маслом и мокрой одеждой. Артур сидит у окна, вертит в пальцах бумажный стакан. Увидев тебя, он не улыбается.",
-      "«Я не знаю, как это исправить», — говорит он. Впервые за вечер он смотрит тебе прямо в глаза."
-    ],
-    choices:[
-      {label:"Сесть и дать ему выговориться",next:"listen",flag:"listened"},
-      {label:"Спросить, чего он ждёт от тебя",next:"truth",flag:"truth"}
-    ]
-  },
-  alone: {
+  train: {
     chapter:"Глава 02 · Дорога",
-    title:"Тишина<br><span>тоже ответ.</span>",
+    title:"Двое суток <span>лета.</span>",
+    vibe:"train",stamp:"Плацкарт · Москва — Анапа",
     text:[
-      "Ты идёшь дальше. Ночь понемногу светлеет, но внутри ничего не меняется. На экране остаётся непрочитанное уведомление.",
-      "Иногда расстояние спасает. Иногда оно просто даёт проблеме время стать больше."
+      "В вагоне жарко так, будто воздух забыли поменять. Колёса стучат, тело проваливается в сон, а после пробуждения возвращаются сухость во рту и головная боль.",
+      "На маленьких станциях мы обливаемся ледяной водой, фотографируемся, едим варёную кукурузу. Время тянется, а юг медленно приближается."
     ],
-    ending:"alone"
+    choices:[
+      {label:"Мечтать о том, что ждёт впереди",next:"guest",set:{train:"dream"}},
+      {label:"Считать станции и переживать саму дорогу",next:"guest",set:{train:"now"}}
+    ]
   },
-  listen: {
-    chapter:"Глава 03 · Чужая тяжесть",
-    title:"Не всё можно<br><span>починить.</span>",
+  guest: {
+    chapter:"Глава 03 · Прибытие",
+    title:"Добро пожаловать <span>в отпуск.</span>",
+    vibe:"guest",stamp:"Витязево · гостевой дом",
     text:[
-      "Артур говорит сбивчиво. Ты не перебиваешь. Не обещаешь решить всё за него. Просто остаёшься рядом, пока слова наконец не начинают складываться в смысл.",
-      "Когда он замолкает, между вами впервые за долгое время нет необходимости притворяться, что всё нормально."
+      "Море близко — так обещали. Сначала, правда, надо поселиться. Комната на троих едва вмещает чемоданы; вентилятора нет, душ общий, а туалет отделён от свиного хлева сеткой-рабицей.",
+      "Всё это совсем не похоже на воображаемый отдых. Единственным местом, где можно спокойно посидеть, оказывается общая кухня: плетёная мебель, навес от солнца, собака, фрукты и чужая бытовая жизнь."
     ],
-    ending:"listen"
+    choices:[
+      {label:"Задержаться на кухне и немного выдохнуть",next:"kitchen",set:{guest:"refuge"}},
+      {label:"Скинуть вещи — и сразу к морю",next:"road",set:{guest:"rush"}}
+    ]
   },
-  truth: {
-    chapter:"Глава 03 · Цена правды",
-    title:"Сначала —<br><span>правда.</span>",
+  kitchen: {
+    chapter:"Глава 03 · Маленькое убежище",
+    title:"Островок <span>нормальности.</span>",
+    vibe:"kitchen",stamp:"Общая кухня",
     text:[
-      "Ты не повышаешь голос. Просто говоришь, что дружба не может держаться на догадках и вечных спасательных операциях.",
-      "Артур отворачивается к окну. Ему больно это слышать. Но впервые разговор не уходит в сторону от того, что действительно важно."
+      "Среди плесени, жары и неудобств эта кухня почему-то кажется живой. Тут кто-то разговаривает об экскурсиях, кто-то режет фрукты, ребёнок носится по двору.",
+      "Иногда хорошее не исчезает даже среди полной грязи. Нужно лишь на секунду перестать смотреть только на то, что бесит. Но отпуск ждать не будет."
     ],
-    ending:"truth"
+    choices:[{label:"Ладно. Теперь — к морю",next:"road",set:{kitchen:"saw_good"}}]
+  },
+  road: {
+    chapter:"Глава 04 · «Шаговая доступность»",
+    title:"Всего-то <span>час пешком.</span>",
+    vibe:"road",stamp:"Болото · свалка · рынок",
+    text:[
+      "Дорога до моря превращается в отдельное испытание: заросшее болото, свалка строительного мусора и гнилых фруктов, рынок, шумные туристы и квартал дорогих отелей.",
+      "Пыль во рту, натирающие тапки, голод и жара. Но мы всё равно идём — слишком долго представляли себе этот берег, чтобы повернуть назад за несколько сотен метров до него."
+    ],
+    choices:[
+      {label:"Упереться: раз пришли — дойдём",next:"sea",set:{road:"push"}},
+      {label:"Держаться за ожидание, пока хватает сил",next:"sea",set:{road:"hope"}}
+    ]
+  },
+  sea: {
+    chapter:"Глава 05 · Первый берег",
+    title:"А море — <span>прекрасное.</span>",
+    vibe:"sea",stamp:"Первые числа августа",
+    text:[
+      "И вот оно. Вода идеальной температуры, солнце рассыпается бликами по волнам, прохладные камни под ногами. Солёная вода щиплет мелкие ранки, но теперь солнце не выжимает из тебя последние силы — оно просто греет лицо.",
+      "Мы смеёмся, прыгаем с пирса, кричим из-за медуз и жадно пьём холодную воду. На несколько минут всё становится ровно таким, каким и должно было быть.",
+      "А потом словно гаснет экран. Красивый кадр не способен отменить то, что ждёт за его пределами."
+    ],
+    choices:[
+      {label:"Сохранить этот момент — он был настоящим",next:"days",set:{sea:"memory"}},
+      {label:"Понять: одного хорошего дня недостаточно",next:"days",set:{sea:"contrast"}}
+    ]
+  },
+  days: {
+    chapter:"Глава 06 · Несовпадение",
+    title:"Месяц — <span>слишком долго.</span>",
+    vibe:"tension",stamp:"Витязево · следующие дни",
+    text:[
+      "После первых дней напряжение растёт. Скандалы сопровождающей, быт и постоянное желание уйти из гостевого дома постепенно съедают остатки радости.",
+      "Мы с Мишей собираем оставшиеся деньги. Сумма смешная — но, кажется, её хватит на билеты. До конца оплаченного отдыха ещё далеко; оставаться здесь не хочется сильнее, чем страшно тратить деньги, отложенные на жизнь."
+    ],
+    choices:[
+      {label:"Собрать деньги и выбраться раньше срока",next:"decision",set:{days:"decisive"}},
+      {label:"Обсудить с Мишей всё ещё раз — и всё-таки уехать",next:"decision",set:{days:"together"}}
+    ]
+  },
+  decision: {
+    chapter:"Глава 07 · Решение",
+    title:"Повернуть <span>рычаг.</span>",
+    vibe:"tension",stamp:"Билеты на ближайшую пятницу",
+    text:[
+      "Мы покупаем билеты и оставшиеся два дня проводим подальше от гостевого дома. В Анапе торговый центр кажется почти другим миром. Появляется даже мысль: может, просто сделать вид, что отпуск был прекрасным?",
+      "Но домой мы вернёмся всего через пять дней после приезда на юг. Решение уже принято. И впервые за долгое время оно зависит не от чужого настроения, а от меня."
+    ],
+    choices:[
+      {label:"Принять последствия и не отступать",next:"departure",set:{decision:"firm"}},
+      {label:"Признать стыд за потраченные деньги — и всё равно уехать",next:"departure",set:{decision:"guilt"}}
+    ]
+  },
+  departure: {
+    chapter:"Глава 08 · Дорога обратно",
+    title:"Щелчок <span>калитки.</span>",
+    vibe:"flight",stamp:"Анапа → Москва → Томск",
+    text:[
+      "Сборы приносят странное удовольствие: каждая вещь, сложенная в чемодан, будто физически отдаляет меня от Витязево. Мы садимся на дорожку. Старая традиция, смысл которой уже никто толком не помнит.",
+      "Такси приезжает. Калитка щёлкает за спиной. В самолёте Москва внизу сияет золотыми огнями, а каждая секунда приближает меня к дому. На трапе томского аэропорта наступает настоящее облегчение."
+    ],
+    choices:[{label:"Вернуться домой",next:"home",set:{return:"relief"}}]
+  },
+  home: {
+    chapter:"Глава 09 · Северск",
+    title:"Возвращение — <span>не победа.</span>",
+    vibe:"home",stamp:"Дверь квартиры",
+    text:[
+      "Облегчение не успевает стать счастьем. Я открываю дверь квартиры — и почти сразу узнаю о смерти собаки. Её загрызла чужая дворняга.",
+      "Боль не складывается в красивые слова. Только что казалось, будто я вышел из раскалённой лавы на горячие угли. Теперь даже эта разница перестаёт иметь значение."
+    ],
+    choices:[
+      {label:"Остаться наедине с тем, что чувствуешь",next:"ending",set:{grief:"alone"}},
+      {label:"Искать способ заглушить шум в голове",next:"ending",set:{grief:"escape"}}
+    ]
+  },
+  ending: {
+    chapter:"Конец эпизода · Начало трещины",
+    title:"Хотелось <span>забыться.</span>",
+    vibe:"end",stamp:"Часть I продолжается",
+    text:[],
+    ending:true
   }
 };
-let current="intro", visited=0;
+let current="cover", visited=[], choicesState={};
 const app=document.getElementById("app"), bar=document.getElementById("bar");
+const totalScenes=11;
+function esc(s){return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}
+function continueEnding(){
+  const state=choicesState;
+  const result=state.grief==="escape"
+    ? "После такого хочется, чтобы внутри наконец стало тихо. Но желание забыться не убирает боль — оно лишь открывает следующую дверь."
+    : "Я всегда был ближе к тем, кто остаётся один на один с болью. Но даже если не бежать от неё, жить с ней всё равно придётся."
+  const memory=state.lens==="friends"
+    ? "Те, кто ехал рядом, останутся в памяти частью этого августа — со всеми ссорами, смешными моментами и решениями."
+    : "Море действительно было прекрасным. Но один красивый кадр не делает счастливой всю историю."
+  return `<p>${result}</p><p>${memory}</p><div class="rule"></div><div class="kicker">Дальше по книге</div><p>Сентябрь. Одиннадцатый класс. Возвращение к обычной жизни — и человек, который появляется рядом именно тогда, когда внутри слишком много шума.</p><button class="primary" onclick="restart()">Пройти эпизод заново</button><button class="secondary" onclick="GenShare()">Поделиться прототипом</button>`;
+}
+function GenShare(){
+  const url=location.href;
+  if(window.Telegram?.WebApp?.openTelegramLink){window.Telegram.WebApp.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent('Амплитуда 95 — интерактивная история'));}
+  else if(navigator.share){navigator.share({title:'Амплитуда 95',text:'Интерактивная история по мотивам книги',url}).catch(()=>{});}
+  else {const b=document.createElement('textarea');b.value=url;document.body.appendChild(b);b.select();try{document.execCommand('copy')}catch(e){}b.remove();}
+}
 function render(id){
-  current=id; const s=scenes[id]; visited++;
-  const body=s.text.map(t=>`<p>${t}</p>`).join("");
+  current=id; const s=scenes[id];
+  if(!visited.includes(id)) visited.push(id);
+  const body=(s.text||[]).map(t=>`<p>${t}</p>`).join("");
   let controls="";
   if(s.ending){
-    const endings={
-      alone:["Финал · Дистанция","Ты выбрал не вмешиваться. История не закончилась — просто этот разговор пока не состоялся."],
-      listen:["Финал · Присутствие","Ты не решил чужую жизнь за друга. Ты сделал другое: выслушал и не отвернулся."],
-      truth:["Финал · Честность","Ты обозначил границу. Теперь у вас есть шанс говорить честно — если оба будете готовы."]
-    };
-    const e=endings[s.ending];
-    controls=`<div class="rule"></div><div class="kicker">${e[0]}</div><p>${e[1]}</p><button class="primary" onclick="restart()">Пройти заново</button>`;
+    controls=continueEnding();
   } else {
-    controls=`<div class="actions">${s.choices.map(c=>`<button onclick="choose('${c.next}','${c.flag}')">${c.label} <span style="float:right;color:var(--red)">↗</span></button>`).join("")}</div>`;
+    if(s.note) controls+=`<div class="note">${s.note}</div>`;
+    controls+=`<div class="actions">${s.choices.map((c,i)=>`<button onclick="choose('${esc(c.next)}',${i})">${c.label}<span class="choice-mark">↗</span></button>`).join("")}</div>`;
   }
-  app.innerHTML=`<section class="fade"><div class="kicker">${s.chapter}</div><h1>${s.title}</h1>${body}${controls}<div class="story-meta"><span>Сцена ${String(visited).padStart(2,"0")}</span><span>Выбор меняет путь</span></div></section>`;
-  bar.style.width=Math.min(100,visited*14)+"%";
+  app.innerHTML=`<section class="fade"><div class="frame" data-vibe="${s.vibe||'home'}"><span class="frame-stamp">${s.stamp||'Амплитуда 95'}</span></div><div class="kicker">${s.chapter}</div><h1>${s.title}</h1>${body}${controls}<div class="story-meta"><span>Сцена ${String(visited.length).padStart(2,'0')}</span><span>Выборы остаются с тобой</span></div></section>`;
+  bar.style.width=Math.min(100,visited.length/totalScenes*100)+"%";
   window.scrollTo({top:0,behavior:"smooth"});
 }
-function choose(next,flag){try{const h=JSON.parse(sessionStorage.getItem("amp95_history")||"[]");h.push({from:current,to:next,flag,time:Date.now()});sessionStorage.setItem("amp95_history",JSON.stringify(h));}catch(e){}render(next)}
-function restart(){visited=0;try{sessionStorage.removeItem("amp95_history")}catch(e){}render("intro")}
-render("intro");
+function choose(next,index){
+  const s=scenes[current], selected=s.choices[index];
+  if(selected?.set) Object.assign(choicesState,selected.set);
+  try{sessionStorage.setItem('amp95_state',JSON.stringify({choicesState,visited,current:next}));}catch(e){}
+  render(next);
+}
+function restart(){
+  current='cover';visited=[];choicesState={};
+  try{sessionStorage.removeItem('amp95_state')}catch(e){}
+  render('cover');
+}
+try{const saved=JSON.parse(sessionStorage.getItem('amp95_state')||'null');if(saved&&saved.choicesState){choicesState=saved.choicesState;visited=Array.isArray(saved.visited)?saved.visited:[];render(saved.current in scenes?saved.current:'cover')}else render('cover')}catch(e){render('cover')}
+if(window.Telegram?.WebApp){window.Telegram.WebApp.ready();window.Telegram.WebApp.expand();}
 </script>
 </body>
 </html>
