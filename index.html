@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#11100f">
+<meta name="application-name" content="Амплитуда 95 · Release 4.0">
 <meta name="description" content="Амплитуда 95 — интерактивный роман с памятью решений и сохранением прогресса.">
 <title>Амплитуда 95 — интерактивный роман</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -63,12 +64,56 @@ button.secondary{text-align:center;background:transparent}
 .fade{animation:fade .32s ease both}
 @keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @keyframes drift{from{transform:translateX(-12%) skewX(-15deg)}to{transform:translateX(12%) skewX(-15deg)}}
+
+/* Immersive details: restrained motion, tactile controls, no forced audio. */
+.top{flex-wrap:wrap;row-gap:9px}
+.brand-label{white-space:nowrap}
+.chapter-label{margin-left:auto;text-align:right}
+button.sound-toggle{width:auto;min-width:88px;min-height:30px;padding:7px 9px;border-radius:999px;border:1px solid #4a6173;background:rgba(17,28,37,.76);color:#a8dcff;text-align:center;font:700 9px/1.2 Arial,sans-serif;letter-spacing:.12em;white-space:nowrap;transition:background .25s,border-color .25s,transform .2s,box-shadow .25s}
+button.sound-toggle[aria-pressed="true"]{background:rgba(30,82,116,.35);border-color:#65c7ff;box-shadow:0 0 16px rgba(101,199,255,.12)}
+button.sound-toggle:active{transform:scale(.96)}
+.frame{transition:filter .8s ease,background 1s ease,border-color .8s ease}
+.frame:after{animation:lightSweep 10s ease-in-out infinite alternate}
+.frame[data-vibe="sea"]:after{background:linear-gradient(90deg,transparent,rgba(125,204,235,.23),transparent)}
+.frame[data-vibe="home"]:after{background:linear-gradient(90deg,transparent,rgba(103,162,205,.12),transparent)}
+section.fade{animation:cinemaIn .66s cubic-bezier(.2,.65,.25,1) both;transform-origin:50% 45%}
+section.fade .frame{animation:frameIn .9s ease both}
+section.fade .kicker{animation:fadeUp .45s .05s ease both}
+section.fade h1{animation:fadeUp .55s .08s ease both}
+section.fade p{animation:fadeUp .55s .13s ease both}
+section.fade .actions button,section.fade>button{animation:fadeUp .45s ease both}
+section.fade .actions button:nth-child(2){animation-delay:.07s}
+section.fade .actions button:nth-child(3){animation-delay:.12s}
+.memory-signal{animation:memoryAppear .5s cubic-bezier(.18,.75,.2,1) both;overflow:hidden}
+.memory-signal::after{animation:memoryPulse 2.8s ease-in-out infinite}
+button{position:relative;overflow:hidden;transition:transform .2s cubic-bezier(.2,.7,.2,1),border-color .28s,background .28s,box-shadow .28s}
+button:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 0 35%,rgba(255,255,255,.055) 50%,transparent 65%);transform:translateX(-125%);transition:transform .55s ease}
+button:hover:before,button:focus-visible:before{transform:translateX(125%)}
+button:active{transform:scale(.985)}
+button.primary{box-shadow:0 5px 20px rgba(189,68,59,.1)}
+button.primary:active{box-shadow:0 2px 8px rgba(189,68,59,.12)}
+.choice-mark{transition:transform .22s ease,color .22s}
+button:hover .choice-mark{transform:translate(2px,-1px);color:#e4c3b2}
+.progress span{position:relative;transition:width .7s cubic-bezier(.2,.7,.2,1)}
+.progress span:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:progressGlint 2.7s linear infinite}
+.save-hint{transition:color .25s}
+.story-meta span:first-child:before{content:"◦ ";color:#8bd8ff}
+@keyframes cinemaIn{from{opacity:0;transform:translateY(13px) scale(.995);filter:blur(2px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+@keyframes frameIn{from{filter:brightness(.65) saturate(.7)}to{filter:brightness(1) saturate(1)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes lightSweep{from{translate:-6% 0;opacity:.45}to{translate:7% 0;opacity:.9}}
+@keyframes memoryAppear{from{opacity:0;transform:translateY(8px);box-shadow:0 0 0 rgba(80,170,240,0)}to{opacity:1;transform:translateY(0);box-shadow:0 7px 22px rgba(0,0,0,.22)}}
+@keyframes memoryPulse{0%,100%{opacity:.65;box-shadow:0 0 7px rgba(101,199,255,.42)}50%{opacity:1;box-shadow:0 0 13px rgba(101,199,255,.9)}}
+@keyframes progressGlint{0%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+@media(max-width:430px){.shell{padding-left:16px;padding-right:16px}.top{font-size:9px;letter-spacing:.11em}.chapter-label{font-size:9px}.sound-toggle{margin-left:auto}p{font-size:17px;line-height:1.62}}
+@media(prefers-reduced-motion:reduce){section.fade,section.fade .frame,section.fade .kicker,section.fade h1,section.fade p,section.fade .actions button,section.fade>button,.memory-signal,.memory-signal::after,.progress span:after{animation:none!important}button,.frame,.progress span{transition:none!important}}
+
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="shell">
-  <header class="top"><span><i class="dot"></i>Интерактивная история</span><span>Часть I · Август</span></header>
+  <header class="top"><span class="brand-label"><i class="dot"></i>Интерактивная история</span><span class="chapter-label" id="chapterLabel">Часть I · Август</span><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" onclick="toggleSound()">ЗВУК · ВЫКЛ</button></header>
   <main id="app" aria-live="polite"></main>
   <div class="progress" aria-hidden="true"><span id="bar"></span></div>
   <footer class="footer"><span>Амплитуда 95</span><span class="footer-right"><span class="save-hint" id="saveHint">Прогресс сохраняется автоматически</span><button class="reset-link" onclick="restart()">Сбросить историю</button></span></footer>
@@ -369,15 +414,166 @@ const scenes = {
       "Ты дошёл до конца третьей главы. Выборы и история прохождения сохранены.",
       "Дальше — весна, выпуск, университет и желание самому зарабатывать. Впереди появится человек, который покажет Мише совсем другой взгляд на свободу и деньги."
     ]
+  },
+
+  ch4_start: {
+    chapter:"Глава IV · Новый ориентир",
+    section:"Часть I · Первая трещина",
+    title:"Нормальная жизнь <span>где-то впереди.</span>",
+    vibe:"home",stamp:"Весна → зима · Между двумя жизнями",
+    text:[
+      "После октябрьского эпизода я больше не курил спайс. Но один правильный вывод не превращает человека в другого человека. Время шло: выпуск, экзамены, университет. Я поступил на международные отношения. Учиться мне нравилось — иногда даже хотелось, чтобы на учёбу оставалось больше времени.",
+      "При этом деньги никуда не исчезли из головы. Хотелось покупать себе еду, одежду, иногда просто иметь деньги на выходные. Просить у родителей не хотелось. Я не считал себя паразитом и всё сильнее убеждал себя, что должен справляться сам."
+    ],
+    choices:[
+      {id:"ch4_independence",label:"Мне нужна была независимость — хотя бы в мелочах",next:"ch4_diman",set:{moneyMotivation:"independence"},signal:"Самостоятельность звучала как хорошая цель. Тогда я ещё не спрашивал себя, какой ценой собираюсь к ней прийти."},
+      {id:"ch4_shortcut",label:"Я хотел быстрее получить то, на что не хватало денег",next:"ch4_diman",set:{moneyMotivation:"shortcut"},signal:"Когда хочется ускорить жизнь, короткий путь легко принять за правильный."}
+    ]
+  },
+  ch4_diman: {
+    chapter:"Глава IV · Диман",
+    section:"Часть I · Первая трещина",
+    title:"У него на всё <span>была история.</span>",
+    vibe:"city",stamp:"Зима · Перед новогодней сессией",
+    text:[
+      "И тогда появился Диман. Он вырос в нашем городе, потом уехал далеко и, как мне казалось, навсегда. Теперь вернулся навестить родственников и старых друзей. Он умел слушать, замечать детали и оставаться в курсе происходящего, даже когда месяцами не появлялся рядом.",
+      "Его истории были пропитаны наркотиками и свободой от привычных мне правил. То, что для меня звучало как невероятное приключение, для него будто было обычным вторником. Я не хотел прожить его жизнь. Я хотел собственных историй — таких, которые могли бы разорвать мою привычную реальность."
+    ],
+    choices:[
+      {id:"ch4_diman_dazzle",label:"Меня цепляли истории о другой жизни",next:"ch4_evening",set:{dimanLens:"dazzle"},signal:"Иногда чужой опыт кажется свободой только потому, что ты не видел его цену."},
+      {id:"ch4_diman_observe",label:"Я пытался понять, что за человек передо мной",next:"ch4_evening",set:{dimanLens:"observe"}}
+    ]
+  },
+  ch4_evening: {
+    chapter:"Глава IV · Вечер у знакомых",
+    section:"Часть I · Первая трещина",
+    title:"Для него — остатки. <span>Для меня — возможность.</span>",
+    vibe:"guest",stamp:"Квартира · Поздний вечер",
+    text:[
+      "Мы оказались в квартире вместе с общими знакомыми. Разговаривали, смеялись, курили. Постепенно вечер терял скорость: люди собирались домой, разговоры обрывались на полуслове, а обычная комната снова становилась просто комнатой.",
+      "Я заметил, что после встречи осталось немного гашиша. Для Димана это почти ничего не значило — он привёз его угостить друзей. А я увидел в остатках потенциальные деньги. Мысль была неловкая, но цепкая. Я боялся спросить, не знал, как он отреагирует, и всё равно уже прокручивал в голове, что это могло бы мне дать."
+    ],
+    choices:[
+      {id:"ch4_count_future",label:"Представлять, что изменится, если решиться",next:"ch4_ask",set:{firstTemptation:"future"},signal:"Мысль ещё не стала поступком. Но я уже начал искать ей оправдание."},
+      {id:"ch4_count_risk",label:"Замечать тревогу — и всё равно не отпускать идею",next:"ch4_ask",set:{firstTemptation:"risk"},signal:"Иногда тревога не останавливает. Она просто идёт рядом."}
+    ]
+  },
+  ch4_ask: {
+    chapter:"Глава IV · Вопрос",
+    section:"Часть I · Первая трещина",
+    title:"Самое трудное — <span>произнести вслух.</span>",
+    vibe:"tension",stamp:"Когда гости разошлись",
+    text:[
+      "Я начал придумывать причины задержаться: то снова возвращался к разговору, то находил ещё одно дело. Мне нужно было дождаться момента, когда мы останемся вдвоём. Было стыдно просить. Было страшно услышать отказ. Но желание оказалось сильнее неловкости.",
+      "В конце концов я спросил, можно ли забрать остатки и поделить деньги после продажи. Диман сначала не понял, зачем мне это: он привёз всё просто угостить пацанов. Я повторил вопрос. Ответ прозвучал почти раздражённо, буднично — будто речь шла о какой-то мелочи."
+    ],
+    choices:[
+      {id:"ch4_ask_forward",label:"Сделать вид, что это просто деловой разговор",next:"ch4_status",set:{askLens:"business"},signal:"Когда решение уже принято внутри, его легко назвать делом, а не поворотом."},
+      {id:"ch4_ask_honest",label:"Признать, что я боялся — и всё равно попросил",next:"ch4_status",set:{askLens:"fear"},signal:"Страх не исчез от того, что я переступил через него."}
+    ]
+  },
+  ch4_status: {
+    chapter:"Глава IV · Новый статус",
+    section:"Часть I · Первая трещина",
+    title:"В кармане — деньги. <span>В голове — срок.</span>",
+    vibe:"tension",stamp:"Старая парка · Ночь без сна",
+    text:[
+      "— Забирай, заебал.",
+      "Вот так неловко и неожиданно для себя я получил новый статус. Ночью спал плохо. В кармане старой парки лежало то, что ещё недавно было просто остатками после чужой вечеринки. Теперь я одновременно видел в этом деньги, тюремный срок и клеймо, которое нельзя будет снять, если всё пойдёт не так.",
+      "Я посмотрел на список друзей уже другим взглядом. В памяти всплывали знакомые, разговоры, люди, которые раньше спрашивали, где достать или можно ли помочь. Казалось, что возможность уже рядом. И вместе с ней пришло другое чувство: я больше не мог считать происходящее безобидной случайностью."
+    ],
+    choices:[
+      {id:"ch4_status_money",label:"Думать о деньгах и о том, что наконец смогу себе позволить",next:"ch4_end",set:{firstStatusLens:"money"},signal:"Деньги обещали свободу. Риск пока казался чем-то, что можно держать на расстоянии."},
+      {id:"ch4_status_risk",label:"Думать о том, как быстро всё может обернуться против меня",next:"ch4_end",set:{firstStatusLens:"risk"},signal:"Я понимал опасность — и всё же продолжал смотреть в сторону выгоды."}
+    ]
+  },
+  ch4_end: {
+    ending:"chapter4",
+    chapter:"Конец главы IV",
+    section:"Часть I · Первая трещина",
+    title:"Поворот уже <span>случился.</span>",
+    vibe:"end",stamp:"Начало зимы · Северск",
+    text:[
+      "Я ещё не называл это большой ошибкой. Мне казалось, что я просто нашёл способ заработать немного денег и решить собственные проблемы. На деле я пересёк границу, которую раньше видел издалека.",
+      "Впереди — первые быстрые деньги, растущая тревога и знакомое чувство, что всё пока ещё можно остановить. Именно так обычно и звучат решения, последствия которых мы пока не умеем оценить."
+    ]
   }
 };
 let current="cover", visited=[], choicesState={}, choiceHistory=[], pendingSignal=null;
+
+let soundEnabled=false;
+try{soundEnabled=localStorage.getItem('amp95_sound_v1')==='1';}catch(e){}
+let audioContext=null;
+function syncSoundButton(){
+  const b=document.getElementById('soundToggle');
+  if(!b)return;
+  b.textContent=soundEnabled?'ЗВУК · ВКЛ':'ЗВУК · ВЫКЛ';
+  b.setAttribute('aria-pressed',soundEnabled?'true':'false');
+  b.title=soundEnabled?'Отключить атмосферные звуки':'Включить атмосферные звуки';
+}
+function getAudioContext(){
+  if(!soundEnabled)return null;
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;
+    if(!Ctx)return null;
+    if(!audioContext)audioContext=new Ctx();
+    if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
+    return audioContext;
+  }catch(e){return null;}
+}
+function softTone(freq, duration=.12, volume=.018, type='sine', delay=0){
+  const ctx=getAudioContext();if(!ctx)return;
+  try{
+    const start=ctx.currentTime+delay, osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.type=type;osc.frequency.setValueAtTime(freq,start);
+    gain.gain.setValueAtTime(.0001,start);
+    gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume),start+.018);
+    gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+    osc.connect(gain);gain.connect(ctx.destination);osc.start(start);osc.stop(start+duration+.03);
+  }catch(e){}
+}
+function softNoise(duration=1.4, volume=.012, filterType='lowpass', cutoff=900){
+  const ctx=getAudioContext();if(!ctx)return;
+  try{
+    const len=Math.max(1,Math.floor(ctx.sampleRate*duration));
+    const buffer=ctx.createBuffer(1,len,ctx.sampleRate), data=buffer.getChannelData(0);
+    for(let i=0;i<len;i++)data[i]=(Math.random()*2-1)*.65;
+    const source=ctx.createBufferSource(), filter=ctx.createBiquadFilter(), gain=ctx.createGain();
+    source.buffer=buffer;filter.type=filterType;filter.frequency.value=cutoff;filter.Q.value=.55;
+    gain.gain.setValueAtTime(.0001,ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(volume,ctx.currentTime+.22);
+    gain.gain.setValueAtTime(volume,ctx.currentTime+duration*.52);
+    gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+duration);
+    source.connect(filter);filter.connect(gain);gain.connect(ctx.destination);source.start();source.stop(ctx.currentTime+duration+.02);
+  }catch(e){}
+}
+function playCue(kind){
+  if(!soundEnabled)return;
+  if(kind==='choice'){softTone(360,.075,.012,'triangle');softTone(520,.09,.008,'sine',.025);}
+  else if(kind==='memory'){softTone(523.25,.24,.014,'sine');softTone(783.99,.34,.009,'sine',.075);}
+  else if(kind==='transition'){softTone(210,.18,.006,'sine');}
+  else if(kind==='toggle'){softTone(620,.12,.009,'sine');}
+}
+function playSceneAtmosphere(vibe){
+  if(!soundEnabled)return;
+  if(vibe==='sea'){softNoise(2.3,.012,'lowpass',1450);}
+  else if(vibe==='train'){softNoise(1.65,.008,'lowpass',260);}
+  else if(vibe==='tension'){softTone(94,.13,.012,'sine');softTone(77,.15,.009,'sine',.18);}
+  else if(vibe==='city'){softNoise(1.0,.004,'bandpass',500);}
+}
+function toggleSound(){
+  soundEnabled=!soundEnabled;
+  try{localStorage.setItem('amp95_sound_v1',soundEnabled?'1':'0');}catch(e){}
+  syncSoundButton();
+  if(soundEnabled){getAudioContext();playCue('toggle');}
+}
+
 const STORAGE_KEY="amp95_progress_v2";
 const app=document.getElementById("app"), bar=document.getElementById("bar");
 const tg=window.Telegram?.WebApp;
 const cloud=tg?.CloudStorage;
 let cloudWriteChain=Promise.resolve();
-const totalScenes=23;
+const totalScenes=Object.keys(scenes).length;
 function esc(s){return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}
 function makeState(){return {version:2,current,visited,choicesState,choiceHistory,pendingSignal,updatedAt:Date.now()}}
 function parseState(value){
@@ -408,6 +604,8 @@ function cloudRemove(key){return new Promise(resolve=>{
 function applyState(s){current=s.current;visited=s.visited;choicesState=s.choicesState;choiceHistory=s.choiceHistory;pendingSignal=s.pendingSignal;}
 function saveState(){
   const state=makeState();
+  const localHint=document.getElementById('saveHint');
+  if(localHint)localHint.textContent='Прогресс сохраняется автоматически';
   const raw=JSON.stringify(state);
   try{localStorage.setItem(STORAGE_KEY,raw);}catch(e){}
   try{sessionStorage.setItem('amp95_state',raw);}catch(e){}
@@ -449,6 +647,16 @@ function getSceneText(id,s){
     if(choicesState.panicResponse==='shame')out.push('В тот момент меня больше всего занимало, кто всё это видел и что теперь обо мне подумают. Этот страх оказался громче здравого смысла.');
     if(choicesState.panicResponse==='help')out.push('Признать, что тебе нужна помощь, оказалось не красивым уроком, а единственным разумным выходом из момента, который я уже не контролировал.');
   }
+  if(id==='ch4_diman'&&choicesState.moneyMotivation==='independence')out.push('Я говорил себе, что хочу всего лишь не зависеть от родителей. В этом желании было что-то понятное — и именно поэтому я так легко перестал замечать, куда оно меня ведёт.');
+  if(id==='ch4_diman'&&choicesState.moneyMotivation==='shortcut')out.push('Я хотел не только самостоятельности. Мне хотелось ускорить жизнь, получить результат сразу — и не думать, почему нормальные пути кажутся такими медленными.');
+  if(id==='ch4_evening'&&choicesState.dimanLens==='dazzle')out.push('Истории Димана казались выходом из привычной жизни. Я видел свободу, но почти не задавался вопросом, что в этих историях осталось за кадром.');
+  if(id==='ch4_evening'&&choicesState.dimanLens==='observe')out.push('Я пытался читать Димана по интонациям и паузам. Но наблюдать за человеком — не то же самое, что понимать его, а тем более понимать последствия его опыта.');
+  if(id==='ch4_ask'&&choicesState.firstTemptation==='future')out.push('Я уже мысленно тратил деньги, которых ещё не было, и строил планы, которым пока не на чем было стоять.');
+  if(id==='ch4_ask'&&choicesState.firstTemptation==='risk')out.push('Я видел риск и не мог сказать, что не понимал его. Просто в тот вечер выгода казалась ближе, чем последствия.');
+  if(id==='ch4_status'&&choicesState.askLens==='business')out.push('Я старался думать об этом как о договорённости. Так было проще не произносить про себя, что я только что изменил отношение к людям из собственного списка контактов.');
+  if(id==='ch4_status'&&choicesState.askLens==='fear')out.push('Я не был уверенным человеком, который хладнокровно всё рассчитал. Я боялся, сомневался, но всё равно сделал шаг — и это пугало сильнее самого страха.');
+  if(id==='ch4_end'&&choicesState.firstStatusLens==='money')out.push('Сильнее всего запомнилось обещание денег: долги можно закрыть, купить одежду, поесть в кафе и больше не объяснять, зачем тебе нужны деньги на выходные.');
+  if(id==='ch4_end'&&choicesState.firstStatusLens==='risk')out.push('Риск не был тайной. Я представлял, чем всё может закончиться, но пока тревога не перевешивала возможность быстро получить то, чего мне не хватало.');
   return out;
 }
 function continueEnding(){
@@ -477,13 +685,14 @@ function render(id){
   current=id; const s=scenes[id];
   if(!s)return;
   if(!visited.includes(id)) visited.push(id);
-  const topLabel=document.querySelector('.top span:last-child');
+  const topLabel=document.getElementById('chapterLabel');
   if(topLabel)topLabel.textContent=s.section||'Часть I · Август';
   const body=getSceneText(id,s).map(t=>`<p>${t}</p>`).join("");
   let controls="";
   if(s.ending==="part1") controls=continueEnding();
   else if(s.ending==="chapter2") controls=finishChapterTwo();
-  else if(s.ending==="chapter3") controls=`<div class="rule"></div><button class="primary" onclick="goTo('ch3_start')">Перечитать главу III</button><button class="secondary" onclick="goTo('ch2_start')">Вернуться к главе II</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
+  else if(s.ending==="chapter3") controls=`<div class="rule"></div><button class="primary" onclick="goTo('ch4_start')">Продолжить: глава IV <span class="choice-mark">→</span></button><button class="secondary" onclick="goTo('ch3_start')">Перечитать главу III</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
+  else if(s.ending==="chapter4") controls=`<div class="rule"></div><button class="primary" onclick="goTo('ch4_start')">Перечитать главу IV</button><button class="secondary" onclick="goTo('ch3_start')">Вернуться к главе III</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
   else {
     if(s.note) controls+=`<div class="note">${s.note}</div>`;
     controls+=`<div class="actions">${s.choices.map((c,i)=>`<button onclick="choose('${esc(c.next)}',${i})">${c.label}<span class="choice-mark">↗</span></button>`).join("")}</div>`;
@@ -491,10 +700,14 @@ function render(id){
   const signal=pendingSignal&&pendingSignal.scene===id?`<div class="memory-signal" role="status">${esc(pendingSignal.text)}</div>`:"";
   app.innerHTML=`<section class="fade"><div class="frame" data-vibe="${s.vibe||'home'}"><span class="frame-stamp">${s.stamp||'Амплитуда 95'}</span></div><div class="kicker">${s.chapter}</div><h1>${s.title}</h1>${signal}${body}${controls}<div class="story-meta"><span>Сцена ${String(visited.length).padStart(2,'0')}</span><span>Прогресс сохраняется</span></div></section>`;
   bar.style.width=Math.min(100,visited.length/totalScenes*100)+"%";
+  syncSoundButton();
+  if(soundEnabled){if(signal)playCue('memory');else playCue('transition');playSceneAtmosphere(s.vibe||'home');}
   saveState();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function choose(next,index){
+  playCue('choice');
+  try{tg?.HapticFeedback?.impactOccurred?.('light');}catch(e){}
   const s=scenes[current], selected=s?.choices?.[index];
   if(!selected||!(next in scenes))return;
   if(selected.set)Object.assign(choicesState,selected.set);
@@ -512,6 +725,7 @@ async function restart(){
   render('cover');
 }
 async function init(){
+  syncSoundButton();
   if(tg){try{tg.ready();tg.expand();}catch(e){}}
   const restored=await restoreState();
   if(restored){
