@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#11100f">
-<meta name="application-name" content="Амплитуда 95 · Release 5.0">
+<meta name="application-name" content="Амплитуда 95 · Release 5.1">
 <meta name="description" content="Амплитуда 95 — интерактивный роман с памятью решений и сохранением прогресса.">
 <title>Амплитуда 95 — интерактивный роман</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -592,7 +592,7 @@ function syncSoundButton(){
   if(!b)return;
   b.textContent=soundEnabled?'АТМОСФЕРА · ВКЛ':'АТМОСФЕРА · ВЫКЛ';
   b.setAttribute('aria-pressed',soundEnabled?'true':'false');
-  b.title=soundEnabled?'Выключить атмосферный фон и мягкие звуки':'Включить тихий фон сцены и мягкие отклики';
+  b.title=soundEnabled?'Выключить атмосферный фон и мягкие звуки':'Включить атмосферу сцены и мягкие отклики';
 }
 function getAudioContext(){
   if(!soundEnabled)return null;
@@ -604,22 +604,34 @@ function getAudioContext(){
     return audioContext;
   }catch(e){return null;}
 }
-function softNoiseHit(duration=.055, volume=.0035, cutoff=850){
+function softNoiseHit(duration=.055, volume=.0035, cutoff=900){
   const ctx=getAudioContext();if(!ctx)return;
   try{
     const now=ctx.currentTime, length=Math.max(1,Math.floor(ctx.sampleRate*duration));
     const buffer=ctx.createBuffer(1,length,ctx.sampleRate), data=buffer.getChannelData(0);
     for(let i=0;i<length;i++){
-      const fade=1-i/length;
+      const fade=Math.pow(1-i/length,1.35);
       data[i]=(Math.random()*2-1)*fade*.45;
     }
     const source=ctx.createBufferSource(), filter=ctx.createBiquadFilter(), gain=ctx.createGain();
     source.buffer=buffer;filter.type='lowpass';filter.frequency.setValueAtTime(cutoff,now);filter.Q.value=.45;
     gain.gain.setValueAtTime(.0001,now);
-    gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume),now+.012);
+    gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume),now+.008);
     gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
     source.connect(filter);filter.connect(gain);gain.connect(ctx.destination);
-    source.start(now);source.stop(now+duration+.01);
+    source.start(now);source.stop(now+duration+.012);
+  }catch(e){}
+}
+function softBrightTick(duration=.026, volume=.00115){
+  const ctx=getAudioContext();if(!ctx)return;
+  try{
+    const now=ctx.currentTime,length=Math.max(1,Math.floor(ctx.sampleRate*duration));
+    const buffer=ctx.createBuffer(1,length,ctx.sampleRate),data=buffer.getChannelData(0);
+    for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,2)*.25;
+    const source=ctx.createBufferSource(),high=ctx.createBiquadFilter(),low=ctx.createBiquadFilter(),gain=ctx.createGain();
+    source.buffer=buffer;high.type='highpass';high.frequency.value=1050;high.Q.value=.35;low.type='lowpass';low.frequency.value=2600;low.Q.value=.3;
+    gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(volume,now+.004);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+    source.connect(high);high.connect(low);low.connect(gain);gain.connect(ctx.destination);source.start(now);source.stop(now+duration+.01);
   }catch(e){}
 }
 function softTone(freq, duration=.06, volume=.0017, delay=0){
@@ -628,7 +640,7 @@ function softTone(freq, duration=.06, volume=.0017, delay=0){
     const start=ctx.currentTime+delay, osc=ctx.createOscillator(), gain=ctx.createGain();
     osc.type='sine';osc.frequency.setValueAtTime(freq,start);
     gain.gain.setValueAtTime(.0001,start);
-    gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume),start+.014);
+    gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume),start+.012);
     gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
     osc.connect(gain);gain.connect(ctx.destination);osc.start(start);osc.stop(start+duration+.025);
   }catch(e){}
@@ -636,14 +648,14 @@ function softTone(freq, duration=.06, volume=.0017, delay=0){
 function playCue(kind){
   if(!soundEnabled)return;
   if(kind==='choice'){
-    // A quiet, rounded tactile click — no bright bell or two-note casino cue.
-    softNoiseHit(.047,.0031,720);softTone(148,.055,.0011,.004);
+    // Slightly more defined fingertip click, still rounded and free of arcade-like tones.
+    softNoiseHit(.043,.0036,920);softBrightTick(.025,.00135);softTone(172,.048,.00115,.003);
   }else if(kind==='memory'){
-    // A tiny breath of filtered air marks a memory without a musical jingle.
-    softNoiseHit(.13,.0021,1550);
+    // Soft airy cue, more like a breath than a notification.
+    softNoiseHit(.13,.0019,1350);
   }else if(kind==='transition'){
-    // Scene ambience crossfades do the work; only a barely-there soft texture remains.
-    softNoiseHit(.085,.0011,650);
+    // Very subtle texture; the changing soundscape carries the transition.
+    softNoiseHit(.07,.00085,600);
   }
 }
 function makeAmbientBuffer(ctx,vibe){
@@ -657,67 +669,141 @@ function makeAmbientBuffer(ctx,vibe){
     else if(vibe==='train'||vibe==='flight') envelope=.72+.18*Math.sin(phase*Math.PI*4);
     else if(vibe==='tension') envelope=.72+.08*Math.sin(phase*Math.PI*2);
     else if(vibe==='city') envelope=.64+.16*Math.sin(phase*Math.PI*6);
-    // Repeating, loop-safe noise gives the scene a continuous air/room texture.
     const white=(Math.random()*2-1);
     const low=(Math.random()*2-1);
     data[i]=(white*.62+low*.38)*envelope*.72;
   }
   return buffer;
 }
+function makeTrainRhythmBuffer(ctx){
+  const interval=.52, beats=24, seconds=interval*beats, length=Math.floor(ctx.sampleRate*seconds);
+  const buffer=ctx.createBuffer(1,length,ctx.sampleRate),data=buffer.getChannelData(0);
+  data.fill(0);
+  const intervalSamples=Math.floor(ctx.sampleRate*interval);
+  for(let beat=0;beat<beats;beat++){
+    const base=beat*intervalSamples;
+    for(const hit of [{offset:0,amp:.76},{offset:.145,amp:.37}]){
+      const begin=base+Math.floor(hit.offset*ctx.sampleRate), n=Math.floor(ctx.sampleRate*.055);
+      for(let j=0;j<n&&begin+j<length;j++){
+        const t=j/ctx.sampleRate;
+        const env=Math.exp(-t/.018)*hit.amp;
+        data[begin+j]+=(Math.random()*2-1)*env*.28;
+      }
+    }
+  }
+  return buffer;
+}
+function makeHeartbeatBuffer(ctx,bpm=72){
+  const beats=8, interval=60/bpm, seconds=beats*interval, length=Math.floor(ctx.sampleRate*seconds);
+  const buffer=ctx.createBuffer(1,length,ctx.sampleRate),data=buffer.getChannelData(0);
+  data.fill(0);
+  for(let i=0;i<length;i++){
+    const t=(i/ctx.sampleRate)%interval;
+    let pulse=0;
+    if(t<.24){pulse+=Math.sin(2*Math.PI*54*t)*Math.exp(-t/.075)*.75;}
+    const second=t-.14;
+    if(second>0&&second<.22)pulse+=Math.sin(2*Math.PI*47*second)*Math.exp(-second/.065)*.40;
+    if(t<.035)pulse+=(Math.random()*2-1)*Math.exp(-t/.012)*.055;
+    data[i]=pulse;
+  }
+  return buffer;
+}
+function makeGraph(){return {vibe:'',master:null,stopNodes:[],nodes:[]};}
+function addNoiseLayer(ctx,graph,opts){
+  const now=ctx.currentTime,source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+  source.buffer=opts.buffer||makeAmbientBuffer(ctx,opts.vibe||graph.vibe);source.loop=true;
+  filter.type=opts.type||'lowpass';filter.frequency.setValueAtTime(opts.cutoff||800,now);filter.Q.value=opts.q||.35;
+  gain.gain.setValueAtTime(opts.volume||.01,now);
+  source.connect(filter);filter.connect(gain);gain.connect(graph.master);source.start(now);
+  graph.stopNodes.push(source);graph.nodes.push(source,filter,gain);
+  if(opts.modFreq&&opts.modDepth){
+    const lfo=ctx.createOscillator(),depth=ctx.createGain();lfo.type='sine';lfo.frequency.value=opts.modFreq;depth.gain.value=(opts.volume||.01)*opts.modDepth;lfo.connect(depth);depth.connect(gain.gain);lfo.start(now);graph.stopNodes.push(lfo);graph.nodes.push(lfo,depth);
+  }
+  return {source,filter,gain};
+}
+function addToneLayer(ctx,graph,opts){
+  const now=ctx.currentTime,osc=ctx.createOscillator(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+  osc.type=opts.wave||'triangle';osc.frequency.setValueAtTime(opts.freq||60,now);
+  filter.type='lowpass';filter.frequency.value=opts.cutoff||220;filter.Q.value=.4;
+  gain.gain.setValueAtTime(opts.volume||.0006,now);
+  osc.connect(filter);filter.connect(gain);gain.connect(graph.master);osc.start(now);
+  graph.stopNodes.push(osc);graph.nodes.push(osc,filter,gain);
+  if(opts.wobble){const lfo=ctx.createOscillator(),depth=ctx.createGain();lfo.frequency.value=opts.wobble;depth.gain.value=opts.wobbleDepth||2;lfo.connect(depth);depth.connect(osc.frequency);lfo.start(now);graph.stopNodes.push(lfo);graph.nodes.push(lfo,depth);}
+}
+function addBufferLayer(ctx,graph,buffer,opts){
+  const now=ctx.currentTime,source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+  source.buffer=buffer;source.loop=true;filter.type=opts.type||'lowpass';filter.frequency.value=opts.cutoff||500;filter.Q.value=.45;
+  gain.gain.setValueAtTime(opts.volume||.006,now);source.connect(filter);filter.connect(gain);gain.connect(graph.master);source.start(now);
+  graph.stopNodes.push(source);graph.nodes.push(source,filter,gain);
+}
+function fadeOutGraph(graph,seconds=1.25){
+  if(!graph||!audioContext||!graph.master)return;
+  const now=audioContext.currentTime;
+  try{graph.master.gain.cancelScheduledValues(now);graph.master.gain.setValueAtTime(Math.max(.0001,graph.master.gain.value),now);graph.master.gain.setTargetAtTime(.0001,now,.28);}catch(e){}
+  graph.stopNodes.forEach(node=>{try{node.stop(now+seconds);}catch(e){}});
+}
 function stopSceneAtmosphere(){
   if(!ambientGraph||!audioContext)return;
-  const old=ambientGraph;ambientGraph=null;
-  try{
-    const now=audioContext.currentTime;
-    old.gain.gain.cancelScheduledValues(now);
-    old.gain.gain.setValueAtTime(Math.max(.0001,old.gain.gain.value),now);
-    old.gain.gain.setTargetAtTime(.0001,now,.18);
-    old.source.stop(now+1.05);
-  }catch(e){}
+  const old=ambientGraph;ambientGraph=null;fadeOutGraph(old,1.3);
 }
 function playSceneAtmosphere(vibe){
   if(!soundEnabled){stopSceneAtmosphere();return;}
   const ctx=getAudioContext();if(!ctx)return;
-  vibe=vibe||'home';
-  if(ambientGraph&&ambientGraph.vibe===vibe)return;
+  vibe=vibe||'home';if(ambientGraph&&ambientGraph.vibe===vibe)return;
   const profiles={
-    sea:{type:'lowpass',cutoff:1550,q:.38,volume:.031},
-    road:{type:'lowpass',cutoff:1150,q:.42,volume:.024},
-    train:{type:'lowpass',cutoff:640,q:.35,volume:.022},
-    flight:{type:'lowpass',cutoff:520,q:.4,volume:.021},
-    city:{type:'bandpass',cutoff:730,q:.25,volume:.015},
-    guest:{type:'lowpass',cutoff:1000,q:.4,volume:.014},
-    kitchen:{type:'lowpass',cutoff:1250,q:.35,volume:.012},
-    home:{type:'lowpass',cutoff:620,q:.35,volume:.012},
-    tension:{type:'lowpass',cutoff:420,q:.45,volume:.015},
-    end:{type:'lowpass',cutoff:360,q:.4,volume:.011}
+    sea:{type:'lowpass',cutoff:1550,q:.38,volume:.031,modFreq:.095,modDepth:.42},
+    road:{type:'lowpass',cutoff:1150,q:.42,volume:.024,modFreq:.075,modDepth:.26},
+    train:{type:'lowpass',cutoff:640,q:.35,volume:.022,modFreq:.13,modDepth:.10},
+    flight:{type:'lowpass',cutoff:520,q:.4,volume:.021,modFreq:.045,modDepth:.12},
+    city:{type:'bandpass',cutoff:730,q:.25,volume:.015,modFreq:.055,modDepth:.36},
+    guest:{type:'lowpass',cutoff:1000,q:.4,volume:.014,modFreq:.035,modDepth:.10},
+    kitchen:{type:'lowpass',cutoff:1250,q:.35,volume:.012,modFreq:.04,modDepth:.08},
+    home:{type:'lowpass',cutoff:620,q:.35,volume:.012,modFreq:.03,modDepth:.08},
+    tension:{type:'lowpass',cutoff:420,q:.45,volume:.009,modFreq:.07,modDepth:.12},
+    end:{type:'lowpass',cutoff:360,q:.4,volume:.011,modFreq:.025,modDepth:.10}
   };
   const p=profiles[vibe]||profiles.home;
+  if(ambientGraph){const old=ambientGraph;ambientGraph=null;fadeOutGraph(old,1.4);}
   try{
-    if(ambientGraph){
-      const old=ambientGraph;const now=ctx.currentTime;
-      old.gain.gain.cancelScheduledValues(now);
-      old.gain.gain.setValueAtTime(Math.max(.0001,old.gain.gain.value),now);
-      old.gain.gain.setTargetAtTime(.0001,now,.24);
-      try{old.source.stop(now+1.35);}catch(e){}
+    const graph=makeGraph();graph.vibe=vibe;graph.master=ctx.createGain();graph.master.gain.setValueAtTime(.0001,ctx.currentTime);graph.master.connect(ctx.destination);
+    ambientGraph=graph;
+    addNoiseLayer(ctx,graph,{vibe,type:p.type,cutoff:p.cutoff,q:p.q,volume:p.volume,modFreq:p.modFreq,modDepth:p.modDepth});
+    // Scene-specific layers make the sound feel like a place, not generic white noise.
+    if(vibe==='sea'){
+      addNoiseLayer(ctx,graph,{vibe,type:'lowpass',cutoff:290,q:.55,volume:.0065,modFreq:.085,modDepth:.58});
+    }else if(vibe==='train'){
+      addNoiseLayer(ctx,graph,{vibe,type:'lowpass',cutoff:260,q:.5,volume:.009,modFreq:.12,modDepth:.12});
+      addBufferLayer(ctx,graph,makeTrainRhythmBuffer(ctx),{type:'lowpass',cutoff:1550,volume:.0075});
+      addToneLayer(ctx,graph,{freq:49,wave:'triangle',cutoff:180,volume:.0010,wobble:.12,wobbleDepth:1.6});
+    }else if(vibe==='flight'){
+      addNoiseLayer(ctx,graph,{vibe,type:'lowpass',cutoff:230,q:.5,volume:.0085,modFreq:.035,modDepth:.09});
+      addToneLayer(ctx,graph,{freq:56,wave:'triangle',cutoff:180,volume:.0022,wobble:.07,wobbleDepth:1.2});
+      addToneLayer(ctx,graph,{freq:112,wave:'sine',cutoff:260,volume:.00055});
+    }else if(vibe==='city'){
+      addNoiseLayer(ctx,graph,{vibe,type:'lowpass',cutoff:280,q:.5,volume:.0065,modFreq:.045,modDepth:.3});
+      addToneLayer(ctx,graph,{freq:93,wave:'triangle',cutoff:220,volume:.00075,wobble:.055,wobbleDepth:5});
+    }else if(vibe==='road'){
+      addNoiseLayer(ctx,graph,{vibe,type:'lowpass',cutoff:300,q:.6,volume:.007,modFreq:.07,modDepth:.2});
+      addToneLayer(ctx,graph,{freq:54,wave:'triangle',cutoff:180,volume:.0016,wobble:.11,wobbleDepth:3.3});
+    }else if(vibe==='tension'){
+      addNoiseLayer(ctx,graph,{vibe,type:'lowpass',cutoff:230,q:.6,volume:.004,modFreq:.065,modDepth:.08});
+      addBufferLayer(ctx,graph,makeHeartbeatBuffer(ctx,72),{type:'lowpass',cutoff:155,volume:.016});
+    }else if(vibe==='guest'||vibe==='kitchen'||vibe==='home'){
+      addNoiseLayer(ctx,graph,{vibe,type:'lowpass',cutoff:1750,q:.4,volume:.0035,modFreq:.027,modDepth:.08});
+      if(vibe==='kitchen')addToneLayer(ctx,graph,{freq:50,wave:'sine',cutoff:130,volume:.00038});
+      if(vibe==='home')addToneLayer(ctx,graph,{freq:58,wave:'sine',cutoff:145,volume:.00030});
+    }else if(vibe==='end'){
+      addNoiseLayer(ctx,graph,{vibe,type:'lowpass',cutoff:210,q:.5,volume:.0042,modFreq:.025,modDepth:.1});
     }
-    const source=ctx.createBufferSource(), filter=ctx.createBiquadFilter(), gain=ctx.createGain();
-    source.buffer=makeAmbientBuffer(ctx,vibe);source.loop=true;
-    filter.type=p.type;filter.frequency.setValueAtTime(p.cutoff,ctx.currentTime);filter.Q.value=p.q;
-    gain.gain.setValueAtTime(.0001,ctx.currentTime);
-    gain.gain.setTargetAtTime(p.volume,ctx.currentTime+.05,.36);
-    source.connect(filter);filter.connect(gain);gain.connect(ctx.destination);
-    source.start();ambientGraph={vibe,source,filter,gain};
-  }catch(e){}
+    graph.master.gain.setTargetAtTime(.92,ctx.currentTime+.05,.42);
+  }catch(e){if(ambientGraph)fadeOutGraph(ambientGraph,.3);ambientGraph=null;}
 }
 function toggleSound(){
   soundEnabled=!soundEnabled;
   try{localStorage.setItem('amp95_sound_v1',soundEnabled?'1':'0');}catch(e){}
   syncSoundButton();
-  if(soundEnabled){
-    const ctx=getAudioContext();
-    if(ctx)playSceneAtmosphere((scenes[current]&&scenes[current].vibe)||'home');
-  }else stopSceneAtmosphere();
+  if(soundEnabled){const ctx=getAudioContext();if(ctx)playSceneAtmosphere((scenes[current]&&scenes[current].vibe)||'home');}
+  else stopSceneAtmosphere();
 }
 
 const STORAGE_KEY="amp95_progress_v2";
@@ -892,7 +978,7 @@ async function init(){
   }else render('cover');
 }
 document.addEventListener('pointerdown',()=>{if(soundEnabled){const ctx=getAudioContext();if(ctx)playSceneAtmosphere((scenes[current]&&scenes[current].vibe)||'home');}},{once:true,passive:true});
-window.addEventListener('pagehide',saveState);
+window.addEventListener('pagehide',()=>{saveState(); if(ambientGraph)fadeOutGraph(ambientGraph,.25);});
 init();
 </script>
 </body>
