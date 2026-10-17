@@ -1,10 +1,9 @@
-
 export default async (request) => {
   if (request.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405 });
   }
 
-  const token = Netlify.env.get("8891559550:AAGx87QB5b1zPWS9f7c1bPkn1FnEe4tDUQo");
+  const token = Netlify.env.get("TELEGRAM_BOT_TOKEN");
 
   if (!token) {
     return new Response("Bot token is not configured", { status: 500 });
@@ -52,4 +51,3 @@ export default async (request) => {
 
   return new Response("OK", { status: 200 });
 };
-
