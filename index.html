@@ -49,8 +49,9 @@ button.secondary{text-align:center;background:transparent}
 .story-meta{display:flex;gap:15px;flex-wrap:wrap;margin-top:21px;font:10px Arial,sans-serif;color:var(--muted);letter-spacing:.09em;text-transform:uppercase}
 .pill{display:inline-block;border:1px solid #4c3931;padding:5px 8px;color:#cbb8a7;font:10px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;margin:0 0 15px}
  .note{border-left:2px solid var(--red);padding:2px 0 2px 14px;color:#b7a79a;font-size:15px;line-height:1.55;margin:18px 0}
-.memory-signal{border-left:2px solid var(--red);padding:10px 13px;margin:0 0 20px;background:linear-gradient(90deg,rgba(189,68,59,.10),transparent);color:#d8b9aa;font-size:14px;line-height:1.5;font-style:italic}
-.memory-signal::before{content:"ПАМЯТЬ · ";font:9px Arial,sans-serif;letter-spacing:.18em;color:var(--red);font-style:normal}
+.memory-signal{position:relative;border:1px solid rgba(105,190,255,.48);border-left:4px solid #65c7ff;border-radius:8px;padding:13px 15px 13px 16px;margin:2px 0 22px;background:linear-gradient(115deg,rgba(16,70,112,.48),rgba(13,38,62,.42) 58%,rgba(14,19,26,.98));box-shadow:inset 0 1px 0 rgba(220,244,255,.07),0 7px 22px rgba(0,0,0,.22);color:#e4f5ff;font-size:14px;line-height:1.55;font-style:italic}
+.memory-signal::before{content:"ПАМЯТЬ · ";display:block;margin-bottom:5px;font:700 9px/1.4 Arial,sans-serif;letter-spacing:.2em;color:#8bd8ff;font-style:normal}
+.memory-signal::after{content:"";position:absolute;right:12px;top:12px;width:6px;height:6px;border-radius:50%;background:#65c7ff;box-shadow:0 0 10px rgba(101,199,255,.72)}
 .reset-link{width:auto;min-height:0;padding:0;border:0;background:transparent;color:#8f8177;font:9px/1.5 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-align:right}
 .reset-link:hover,.reset-link:focus-visible{background:transparent;color:#e0b2a7;border:0}
 .footer-right{display:flex;align-items:flex-end;flex-direction:column;gap:5px;text-align:right}
@@ -315,6 +316,59 @@ const scenes = {
       "Впереди — октябрь, знакомый голос в телефоне и предложение, которое легче было принять на автомате, чем честно объяснить себе, почему стоит отказаться.",
       "Прогресс и решения сохранены. Следующая глава продолжит историю с этого места."
     ]
+  },
+  ch3_start: {
+    chapter:"Глава III · Октябрь",
+    section:"Часть I · Первая трещина",
+    title:"«Курить <span>будешь?»</span>",
+    vibe:"tension",stamp:"Северск · Промозглый октябрь",
+    text:[
+      "На улице и на душе было одинаково мерзко. Хотелось выспаться и отдохнуть — без конкретного плана, просто чтобы никто не трогал. Телефон иногда отвлекал сообщениями Арины. Накануне она написала что-то вроде «Фонарь потух». Я пытался вывести разговор на нормальную тему, но ей хотелось внимания, а у меня и без того хватало мыслей.",
+      "В этот раз позвонил другой знакомый голос. Разговор был коротким, почти деловым. Никаких историй, никаких объяснений — только предложение, которое уже было знакомо. После пикника я знал, чем это может закончиться. И всё же знание не всегда помогает поступить правильно."
+    ],
+    choices:[
+      {id:"october_instinct",label:"Прислушаться к внутреннему сигналу и отказаться",next:"ch3_meeting",set:{octoberChoice:"instinct"},signal:"Иногда ты уже знаешь ответ. Труднее всего — поступить так, будто действительно ему веришь."},
+      {id:"october_routine",label:"Согласиться встретиться: кажется, в этот раз всё будет иначе",next:"ch3_meeting",set:{octoberChoice:"routine"},signal:"Тогда это казалось мелочью. Просто встреча, просто вечер."}
+    ]
+  },
+  ch3_meeting: {
+    chapter:"Глава III · Старая ошибка",
+    section:"Часть I · Первая трещина",
+    title:"Достаточно было <span>вспомнить.</span>",
+    vibe:"tension",stamp:"Чужая квартира · Вечер",
+    text:[
+      "Я всё-таки оказался там. План был простой: зайти, покурить, разойтись. Как будто простота плана могла гарантировать простой результат. Антоху я знал достаточно, чтобы не ждать от этой затеи ничего хорошего. Но в тот момент мне было легче не задавать лишних вопросов.",
+      "После первой затяжки тело будто налилось тяжёлой вязкостью. Голова перестала успевать за происходящим. Я был астматиком и паникёром, и воображение тут же нарисовало самый страшный исход: сейчас начнутся судороги, рядом не окажется ингалятора, и я умру в чужой квартире. Не где-нибудь в красивой истории — здесь, среди людей, которые даже не поймут, что делать.",
+      "Я потребовал вызвать скорую. Ребята растерялись, пытались одновременно помочь и понять, что говорить. Постепенно стало отпускать. Судорог не было — это была паническая атака, усиленная изменённым состоянием сознания. Но страх был настоящим. И никакого удовольствия он не стоил."
+    ],
+    choices:[
+      {id:"panic_admit",label:"Признать: я снова поставил себя в опасное положение",next:"ch3_after",set:{octoberLesson:"admit"},signal:"Можно сколько угодно объяснять себе, что всё под контролем. Тело иногда отвечает раньше."},
+      {id:"panic_minimize",label:"Сделать вид, что ничего особенного не произошло",next:"ch3_after",set:{octoberLesson:"minimize"},signal:"Самое опасное — не всегда сам страх. Иногда опаснее то, как быстро ты его забываешь."}
+    ]
+  },
+  ch3_after: {
+    chapter:"Глава III · После",
+    section:"Часть I · Первая трещина",
+    title:"Больше <span>не хотелось проверять.</span>",
+    vibe:"home",stamp:"Поздний вечер · Северск",
+    text:[
+      "После этого я больше не курил спайс. Не потому, что вдруг стал мудрым или разобрался в себе. Просто однажды хватило. Я слишком ясно увидел, как быстро любопытство превращается в страх, а чужое «да всё нормально» ничего не гарантирует.",
+      "Но одна граница ещё не означала, что я научился беречь себя. В голове по-прежнему жила идея найти способ зарабатывать, не зависеть от родителей и приблизить ту большую жизнь, которую я себе придумал. Я ещё не понимал, что дальше буду принимать решения не только из любопытства. Иногда — из жадности, иногда — из гордости, а иногда потому, что кто-то покажется мне человеком, у которого есть ответы."
+    ],
+    choices:[
+      {id:"chapter3_finish",label:"Сохранить главу и продолжить позже",next:"ch3_end",set:{chapterThreeComplete:true},signal:"Не всё заканчивается после плохого вечера. Иногда именно после него начинается следующий выбор."}
+    ]
+  },
+  ch3_end: {
+    ending:"chapter3",
+    chapter:"Конец главы III",
+    section:"Часть I · Первая трещина",
+    title:"Страх прошёл. <span>Уверенность осталась.</span>",
+    vibe:"end",stamp:"Продолжение следует",
+    text:[
+      "Ты дошёл до конца третьей главы. Выборы и история прохождения сохранены.",
+      "Дальше — весна, выпуск, университет и желание самому зарабатывать. Впереди появится человек, который покажет Мише совсем другой взгляд на свободу и деньги."
+    ]
   }
 };
 let current="cover", visited=[], choicesState={}, choiceHistory=[], pendingSignal=null;
@@ -323,7 +377,7 @@ const app=document.getElementById("app"), bar=document.getElementById("bar");
 const tg=window.Telegram?.WebApp;
 const cloud=tg?.CloudStorage;
 let cloudWriteChain=Promise.resolve();
-const totalScenes=19;
+const totalScenes=23;
 function esc(s){return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}
 function makeState(){return {version:2,current,visited,choicesState,choiceHistory,pendingSignal,updatedAt:Date.now()}}
 function parseState(value){
@@ -411,7 +465,7 @@ function finishChapterTwo(){
   if(choicesState.arina==='remember_help') recap='Ты сохранил в памяти то, что Арина помогла. Эта деталь вернётся позже.';
   else if(choicesState.arina==='remember_shame') recap='Ты сильнее запомнил стыд и чужие взгляды. В следующих главах этот взгляд на прошлое ещё может отозваться.';
   const confidence=choicesState.control==='believe'?'Ты пока веришь, что можешь остановиться в любой момент.':choicesState.control==='doubt'?'Ты уже сомневаешься в собственном контроле, но пока не знаешь, что с этим делать.':'';
-  return `<p>${recap}</p>${confidence?`<p>${confidence}</p>`:''}<div class="rule"></div><div class="kicker">Продолжение следует</div><p>Следующая глава продолжит историю с октября. Твои выборы сохранены — мы не начнём всё заново, когда добавим продолжение.</p><button class="primary" onclick="goTo('ch2_arina')">Пересмотреть сцену с Ариной</button><button class="secondary" onclick="restart()">Начать историю заново</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
+  return `<p>${recap}</p>${confidence?`<p>${confidence}</p>`:''}<div class="rule"></div><div class="kicker">Глава III · Октябрь</div><p>Твои решения сохранены. Продолжение начинается с промозглого октябрьского дня и знакомого предложения, на которое Миша уже однажды пожалел, что согласился.</p><button class="primary" onclick="goTo('ch3_start')">Продолжить: глава III <span class="choice-mark">→</span></button><button class="secondary" onclick="goTo('ch2_arina')">Пересмотреть сцену с Ариной</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
 }
 function GenShare(){
   const url=location.href;
@@ -429,6 +483,7 @@ function render(id){
   let controls="";
   if(s.ending==="part1") controls=continueEnding();
   else if(s.ending==="chapter2") controls=finishChapterTwo();
+  else if(s.ending==="chapter3") controls=`<div class="rule"></div><button class="primary" onclick="goTo('ch3_start')">Перечитать главу III</button><button class="secondary" onclick="goTo('ch2_start')">Вернуться к главе II</button><button class="secondary" onclick="GenShare()">Поделиться историей</button>`;
   else {
     if(s.note) controls+=`<div class="note">${s.note}</div>`;
     controls+=`<div class="actions">${s.choices.map((c,i)=>`<button onclick="choose('${esc(c.next)}',${i})">${c.label}<span class="choice-mark">↗</span></button>`).join("")}</div>`;
