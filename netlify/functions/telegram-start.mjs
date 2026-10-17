@@ -3,7 +3,7 @@ export default async (request) => {
     return new Response("Method Not Allowed", { status: 405 });
   }
 
-  const token = Netlify.env.get("TELEGRAM_BOT_TOKEN");
+  const token = process.env.TELEGRAM_BOT_TOKEN;
 
   if (!token) {
     return new Response("Bot token is not configured", { status: 500 });
